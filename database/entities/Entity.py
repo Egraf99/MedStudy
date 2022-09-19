@@ -23,7 +23,6 @@ class Questions:
             id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
             question TEXT NOT NULL,
             short TEXT,
-            answer_is_bool INTEGER NOT NULL DEFAULT 0 CHECK (answer_is_bool IN (0,1)),
             one_answer INTEGER NOT NULL DEFAULT 1 CHECK (one_answer IN (0,1)),
             require INTEGER NOT NULL DEFAULT 0 CHECK (require IN (0,1)),
             measure TEXT,
@@ -55,13 +54,17 @@ class Answers:
         )
         """
 
+    INSERT_INTO_WITH_ID: str = """
+        INSERT INTO Answers (id, answer) VALUES (?,?)
+        """
+
 
 class EnableAnswers:
     CREATE_TABLE: str = """
         CREATE TABLE IF NOT EXISTS EnableAnswers (
             question_id INTEGER NOT NULL,
             answer_id INTEGER NOT NULL,
-            jump_to INTEGER DEFAULT 0,
+            jump_to_question INTEGER,
             FOREIGN KEY (question_id) REFERENCES Questions(id),
             FOREIGN KEY (answer_id) REFERENCES Answers(id),
             UNIQUE (question_id, answer_id)
