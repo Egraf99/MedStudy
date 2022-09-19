@@ -86,6 +86,10 @@ class Ui_Dialog(object):
         self.answers_list.setEnabled(False)
         self.answers_list.setObjectName("answers_list")
         self.gridLayout_2.addWidget(self.answers_list, 1, 0, 1, 1)
+        self.delete_answer_button = QtWidgets.QPushButton(self.groupBox)
+        self.delete_answer_button.setEnabled(False)
+        self.delete_answer_button.setObjectName("delete_answer_button")
+        self.gridLayout_2.addWidget(self.delete_answer_button, 1, 1, 1, 1)
         self.verticalLayout_3.addLayout(self.gridLayout_2)
         self.verticalLayout_5.addWidget(self.groupBox)
         self.verticalLayout_4 = QtWidgets.QVBoxLayout()
@@ -115,6 +119,7 @@ class Ui_Dialog(object):
         self.manu_answer_radioButton.toggled['bool'].connect(self.add_answer_lineEdit.setEnabled) # type: ignore
         self.manu_answer_radioButton.toggled['bool'].connect(self.add_answer_button.setEnabled) # type: ignore
         self.manu_answer_radioButton.toggled['bool'].connect(self.answers_list.setEnabled) # type: ignore
+        self.manu_answer_radioButton.toggled['bool'].connect(self.delete_answer_button.setEnabled) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(Dialog)
         Dialog.setTabOrder(self.question_lineEdit, self.short_question_lineEdit)
         Dialog.setTabOrder(self.short_question_lineEdit, self.bool_answer)
@@ -138,5 +143,6 @@ class Ui_Dialog(object):
         self.manu_answer_radioButton.setText(_translate("Dialog", "Множественный ответ"))
         self.label_2.setText(_translate("Dialog", "Ед. измер."))
         self.add_answer_button.setText(_translate("Dialog", "Добавить"))
+        self.delete_answer_button.setText(_translate("Dialog", "Удалить"))
         self.private_checkBox.setText(_translate("Dialog", "Указание на личность пациента"))
         self.require_checkBox.setText(_translate("Dialog", "Обязательный вопрос"))
