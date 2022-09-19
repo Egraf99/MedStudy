@@ -38,8 +38,12 @@ class MedDatabase:
         self.execute(PatientAnswer.CREATE_TABLE)
         self.execute(Questions.CREATE_TABLE)
         self.execute(EnableAnswers.CREATE_TABLE)
-        self.execute(Answers.INSERT_INTO_WITH_ID, "0", "Нет")
-        self.execute(Answers.INSERT_INTO_WITH_ID, "1", "Да")
+        self.execute(RepeatQuestions.CREATE_TABLE)
+
+        # добавляем ответы Да и Нет с нужными id, если их еще нет в БД
+        if not self.execute(Answers.GET_BOOL_ANSWERS, need_answer=True):
+            self.execute(Answers.INSERT_INTO_WITH_ID, "0", "Нет")
+            self.execute(Answers.INSERT_INTO_WITH_ID, "1", "Да")
 
     def add_patient(self, name: str, age: int, male: int):
         self.execute(Patients.INSERT_ALL, name, age, male)

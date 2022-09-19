@@ -1,8 +1,15 @@
-from MedRepo import MedRepo
+import sys
+
+from PyQt5.QtWidgets import QApplication
+
+from ui.Window import Window
 
 
 def main():
-    MedRepo()
+    app = QApplication(sys.argv)
+    win = Window()
+    win.show()
+    sys.exit(app.exec())
 
 
 if __name__ == '__main__':

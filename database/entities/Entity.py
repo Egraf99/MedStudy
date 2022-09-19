@@ -34,7 +34,6 @@ class Questions:
 class PatientAnswer:
     CREATE_TABLE: str = """
         CREATE TABLE IF NOT EXISTS PatientAnswer (
-            id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
             patient_id INTEGER NOT NULL,
             question_id INTEGER NOT NULL,
             answer_id INTEGER NOT NULL,
@@ -58,6 +57,10 @@ class Answers:
         INSERT INTO Answers (id, answer) VALUES (?,?)
         """
 
+    GET_BOOL_ANSWERS: str = """
+        SELECT * FROM Answers WHERE id IN (0,1)
+        """
+
 
 class EnableAnswers:
     CREATE_TABLE: str = """
@@ -69,6 +72,16 @@ class EnableAnswers:
             FOREIGN KEY (answer_id) REFERENCES Answers(id),
             UNIQUE (question_id, answer_id)
         )
+        """
+
+
+class RepeatQuestions:
+    CREATE_TABLE: str = """
+        CREATE TABLE IF NOT EXISTS RepeatQuestions (
+            question_id INTEGER NOT NULL,
+            from_question INTEGER NOT NULL,
+            to_question INTEGER NOT NULL
+        ) 
         """
 
 
