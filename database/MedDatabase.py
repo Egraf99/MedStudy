@@ -5,7 +5,7 @@ from database.entities.Entity import *
 
 
 class MedDatabase:
-    NAME_DB: str = "./database/med.db"
+    NAME_DB: str = "./med.db"
 
     def __init__(self):
         self.create_db()
@@ -82,6 +82,11 @@ class MedDatabase:
                     answer_id = self._insert_entity_if_not_exist(Answers.GET_ID_BY_TEXT, answer, Answers.INSERT_INTO,
                                                                  answer)
                     self.execute(EnableAnswers.INSERT_ANSWER, question_id, answer_id)
+
+    def get_questions_order(self):
+        questions_list = self.execute(Question.SELECT_NAME_ORDER, need_answer=True)
+        return list(
+            map(lambda question: Question.init_short(question[0], question[1], int(question[2])), questions_list))
 
 
 if __name__ == "__main__":

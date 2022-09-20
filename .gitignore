@@ -2,3 +2,6 @@
 __pycache__
 *.ui
 *.db
+dist
+build
+*.spec

@@ -1,6 +1,4 @@
-from typing import Optional
-
-from PyQt5.QtWidgets import QMainWindow, QDialog
+from PyQt5.QtWidgets import QMainWindow, QDialog, QTableWidgetItem
 
 from MedRepo import MedRepo
 from database.entities.Entity import Question
@@ -25,6 +23,17 @@ class Window(QMainWindow, Ui_MainWindow):
 
     def update_table(self):
         self.order = self.med_repo.get_count_questions()
+        new_questions = self.med_repo.get_questions()
+        self._add_question_to_table(new_questions)
+
+    def _add_question_to_table(self, question_list: list[Question]):
+        self.questions_table.setRowCount(0)
+        for question in question_list:
+            row = self.questions_table.rowCount()
+            self.questions_table.insertRow(row)
+            self.questions_table.setItem(row, 0, QTableWidgetItem(question.name))
+            self.questions_table.setItem(row, 1, QTableWidgetItem(question.short))
+            self.questions_table.setItem(row, 2, QTableWidgetItem(str(question.order)))
 
 
 class AddNewQuestionDialog(QDialog, Ui_Dialog):

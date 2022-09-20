@@ -42,6 +42,10 @@ class Question:
             order_int INTEGER NOT NULL UNIQUE
         )"""
 
+    SELECT_NAME_ORDER: str = """
+        SELECT question, short, order_int FROM Question ORDER BY order_int ASC
+        """
+
     GET_COUNT: str = """
         SELECT COUNT(*) FROM Question
         """
@@ -70,7 +74,8 @@ class Question:
                  short: str = None,
                  require: bool = False,
                  private: bool = False,
-                 order: int = None):
+                 order: int = None
+                 ):
         self.name: str = name
         self.short: str = short
         self.type_ = Question.TypeAnswer.BOOL
@@ -81,6 +86,10 @@ class Question:
         self.order: int = order
         self.measure = None
         self.list_answers = None
+
+    @staticmethod
+    def init_short(name: str, short: str, order: int):
+        return Question(name=name, short=short, order=order)
 
     def set_type(self, type_: TypeAnswer, measure: str = None, list_answers: list[str] = None):
         self.type_: Question.TypeAnswer = type_

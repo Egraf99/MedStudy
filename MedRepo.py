@@ -21,6 +21,8 @@ class MedRepo(Singleton):
     def get_count_questions(self) -> int:
         return self.db.get_count_questions()
 
+    def get_questions(self) -> list[Question]:
+        return self.db.get_questions_order()
 
     def insert_question(self, question: Question):
         self.db.insert_question(question)
