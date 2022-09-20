@@ -58,16 +58,20 @@ class MedDatabase:
     def get_count_questions(self) -> int:
         return self.execute(Question.GET_COUNT, need_answer=True)[0][0] + 1
 
+    def _insert_entity_if_not_exist(self, check_query: str, check_field, insert_query: str, *insert_fields) -> int:
+        try:
+            id_ = self.execute(check_query, check_field, need_answer=True)[0][0]
+        except IndexError:
+            self.execute(insert_query, *insert_fields)
+            id_ = self.execute(check_query, check_field, need_answer=True)[0][0]
+        return id_
+
     def insert_question(self, question: Question):
         single_answer: int = 1 if question.type_ != Question.TypeAnswer.MANY else 0
-        require = 1 if question.require else 0
-        private = 1 if question.private else 0
-        try:
-            question_id = self.execute(Question.GET_ID_BY_NAME, question.name, need_answer=True)[0][0]
-        except IndexError:
-            self.execute(Question.INSERT,
-                         question.name, question.short, single_answer, require, private, question.order)
-            question_id = self.execute(Question.GET_ID_BY_NAME, question.name, need_answer=True)[0][0]
+        question_id = self._insert_entity_if_not_exist(Question.GET_ID_BY_NAME, question.name,
+                                                       Question.INSERT,
+                                                       question.name, question.short, single_answer,
+                                                       question.require_int, question.private_int, question.order)
         if question.type_ == Question.TypeAnswer.BOOL:
             self.execute(EnableAnswers.INSERT_NO_ANSWER, question_id)
             self.execute(EnableAnswers.INSERT_YES_ANSWER, question_id)
@@ -75,11 +79,8 @@ class MedDatabase:
             self.execute(Question.UPDATE_MEASURE, question.measure, question_id)
             if question.type_ == Question.TypeAnswer.MANY and question.list_answers:
                 for answer in question.list_answers:
-                    try:
-                        answer_id = self.execute(Answers.GET_ID_BY_TEXT, answer, need_answer=True)[0][0]
-                    except IndexError:
-                        self.execute(Answers.INSERT_INTO, answer)
-                        answer_id = self.execute(Answers.GET_ID_BY_TEXT, answer, need_answer=True)[0][0]
+                    answer_id = self._insert_entity_if_not_exist(Answers.GET_ID_BY_TEXT, answer, Answers.INSERT_INTO,
+                                                                 answer)
                     self.execute(EnableAnswers.INSERT_ANSWER, question_id, answer_id)
 
 

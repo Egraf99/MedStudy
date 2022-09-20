@@ -75,7 +75,9 @@ class Question:
         self.short: str = short
         self.type_ = Question.TypeAnswer.BOOL
         self.require: bool = require
+        self.require_int: int = 1 if require else 0
         self.private: bool = private
+        self.private_int: int = 1 if private else 0
         self.order: int = order
         self.measure = None
         self.list_answers = None
