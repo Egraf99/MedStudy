@@ -9,6 +9,9 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QTableWidgetItem
+
+from database.entities.Entity import Question
 
 
 class Ui_MainWindow(object):
@@ -27,7 +30,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_2.addWidget(self.new_question_button)
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.questions_table = QtWidgets.QTableWidget(self.centralwidget)
+        self.questions_table = QuestionTable(self.centralwidget)
         self.questions_table.setEnabled(True)
         self.questions_table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.questions_table.setProperty("showDropIndicator", True)
@@ -86,3 +89,31 @@ class Ui_MainWindow(object):
         self.change_question_button.setText(_translate("MainWindow", "Изменить"))
         self.set_additional_button.setText(_translate("MainWindow", "Установить доп. вопросы"))
         self.set_cicle_button.setText(_translate("MainWindow", "Установить цикл"))
+
+
+class QuestionTable(QtWidgets.QTableWidget):
+    def __init__(self, parent=None):
+        super(QuestionTable, self).__init__(parent)
+        self.questions = []
+
+    def clear_(self):
+        self.setRowCount(0)
+        self.questions.clear()
+
+    def add_question(self, question: Question):
+        row = self.rowCount()
+        self.questions.insert(row, question)
+        self.insertRow(row)
+        self.setItem(row, 0, QTableWidgetItem(question.name))
+        self.setItem(row, 1, QTableWidgetItem(question.short))
+        self.setItem(row, 2, QTableWidgetItem(str(question.order)))
+
+    def fill(self, questions: list[Question]):
+        self.clear_()
+        for question in questions:
+            self.add_question(question)
+
+    def get_selected_question(self) -> Question:
+        # у выделенной строки берется значение из поля Порядок
+        index = int(self.selectedItems()[2].text())
+        return self.questions[index-1]

@@ -58,9 +58,9 @@ class Ui_Dialog(object):
         self.single_answer_radioButton = QtWidgets.QRadioButton(self.groupBox)
         self.single_answer_radioButton.setObjectName("single_answer_radioButton")
         self.horizontalLayout.addWidget(self.single_answer_radioButton)
-        self.manu_answer_radioButton = QtWidgets.QRadioButton(self.groupBox)
-        self.manu_answer_radioButton.setObjectName("manu_answer_radioButton")
-        self.horizontalLayout.addWidget(self.manu_answer_radioButton)
+        self.many_answer_radioButton = QtWidgets.QRadioButton(self.groupBox)
+        self.many_answer_radioButton.setObjectName("many_answer_radioButton")
+        self.horizontalLayout.addWidget(self.many_answer_radioButton)
         self.verticalLayout_3.addLayout(self.horizontalLayout)
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
@@ -114,18 +114,18 @@ class Ui_Dialog(object):
         self.saveAndCloseButtonsBox.accepted.connect(Dialog.accept) # type: ignore
         self.saveAndCloseButtonsBox.rejected.connect(Dialog.reject) # type: ignore
         self.single_answer_radioButton.toggled['bool'].connect(self.measure_lineEdit.setEnabled) # type: ignore
-        self.manu_answer_radioButton.toggled['bool'].connect(self.measure_lineEdit.setEnabled) # type: ignore
+        self.many_answer_radioButton.toggled['bool'].connect(self.measure_lineEdit.setEnabled) # type: ignore
         self.bool_answer_radioButton.toggled['bool'].connect(self.measure_lineEdit.clear) # type: ignore
-        self.manu_answer_radioButton.toggled['bool'].connect(self.add_answer_lineEdit.setEnabled) # type: ignore
-        self.manu_answer_radioButton.toggled['bool'].connect(self.add_answer_button.setEnabled) # type: ignore
-        self.manu_answer_radioButton.toggled['bool'].connect(self.answers_list.setEnabled) # type: ignore
-        self.manu_answer_radioButton.toggled['bool'].connect(self.delete_answer_button.setEnabled) # type: ignore
+        self.many_answer_radioButton.toggled['bool'].connect(self.add_answer_lineEdit.setEnabled) # type: ignore
+        self.many_answer_radioButton.toggled['bool'].connect(self.add_answer_button.setEnabled) # type: ignore
+        self.many_answer_radioButton.toggled['bool'].connect(self.answers_list.setEnabled) # type: ignore
+        self.many_answer_radioButton.toggled['bool'].connect(self.delete_answer_button.setEnabled) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(Dialog)
         Dialog.setTabOrder(self.question_lineEdit, self.short_question_lineEdit)
         Dialog.setTabOrder(self.short_question_lineEdit, self.bool_answer_radioButton)
         Dialog.setTabOrder(self.bool_answer_radioButton, self.single_answer_radioButton)
-        Dialog.setTabOrder(self.single_answer_radioButton, self.manu_answer_radioButton)
-        Dialog.setTabOrder(self.manu_answer_radioButton, self.measure_lineEdit)
+        Dialog.setTabOrder(self.single_answer_radioButton, self.many_answer_radioButton)
+        Dialog.setTabOrder(self.many_answer_radioButton, self.measure_lineEdit)
         Dialog.setTabOrder(self.measure_lineEdit, self.add_answer_lineEdit)
         Dialog.setTabOrder(self.add_answer_lineEdit, self.add_answer_button)
         Dialog.setTabOrder(self.add_answer_button, self.answers_list)
@@ -140,7 +140,7 @@ class Ui_Dialog(object):
         self.groupBox.setTitle(_translate("Dialog", "Ответ"))
         self.bool_answer_radioButton.setText(_translate("Dialog", "Да|Нет"))
         self.single_answer_radioButton.setText(_translate("Dialog", "Одиночный ответ"))
-        self.manu_answer_radioButton.setText(_translate("Dialog", "Множественный ответ"))
+        self.many_answer_radioButton.setText(_translate("Dialog", "Множественный ответ"))
         self.label_2.setText(_translate("Dialog", "Ед. измер."))
         self.add_answer_button.setText(_translate("Dialog", "Добавить"))
         self.delete_answer_button.setText(_translate("Dialog", "Удалить"))
