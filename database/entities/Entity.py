@@ -42,8 +42,8 @@ class Question:
             order_int INTEGER NOT NULL UNIQUE
         )"""
 
-    SELECT_NAME_ORDER: str = """
-        SELECT question, short, order_int FROM Question ORDER BY order_int ASC
+    SELECT_ORDER: str = """
+        SELECT * FROM Question ORDER BY order_int ASC
         """
 
     GET_COUNT: str = """
@@ -70,26 +70,29 @@ class Question:
         """
 
     def __init__(self,
+                 id_: int = None,
                  name: str = None,
                  short: str = None,
-                 require: bool = False,
-                 private: bool = False,
-                 order: int = None
+                 single_answer: int = None,
+                 require: int = 0,
+                 measure: str = None,
+                 private: int = 0,
+                 order: int = None,
                  ):
+        self.id_ = id_
         self.name: str = name
         self.short: str = short
+        self.single_answer_bool = bool(single_answer)
+        self.single_answer_int = single_answer
         self.type_ = Question.TypeAnswer.BOOL
-        self.require: bool = require
-        self.require_int: int = 1 if require else 0
-        self.private: bool = private
-        self.private_int: int = 1 if private else 0
+        self.measure = measure
+        self.require_int: int = require
+        self.require_bool: bool = bool(require)
+        self.private_int: int = private
+        self.private_bool: bool = bool(private)
         self.order: int = order
         self.measure = None
         self.list_answers = None
-
-    @staticmethod
-    def init_short(name: str, short: str, order: int):
-        return Question(name=name, short=short, order=order)
 
     def set_type(self, type_: TypeAnswer, measure: str = None, list_answers: list[str] = None):
         self.type_: Question.TypeAnswer = type_
@@ -164,7 +167,7 @@ class EnableAnswers:
 class RepeatQuestions:
     CREATE_TABLE: str = """
         CREATE TABLE IF NOT EXISTS RepeatQuestions (
-            question_id INTEGER NOT NULL,
+            question_id INTEGER NOT NULL UNIQUE,
             from_question INTEGER NOT NULL,
             to_question INTEGER NOT NULL
         ) 

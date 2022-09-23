@@ -14,17 +14,24 @@ class Window(QMainWindow, Ui_MainWindow):
         self.order = -1
         self.update_table()
         self.connection_signal_slot()
+        self.questions = []
 
     def connection_signal_slot(self):
-        self.new_question_button.clicked.connect(self.add_question_show)
+        self.new_question_button.clicked.connect(self._add_question_show)
+        self.questions_table.cellPressed.connect(self._active_change_buttons)
 
-    def add_question_show(self):
+    def _add_question_show(self):
         AddNewQuestionDialog(self.order, parent=self, after_save_func=self.update_table).exec()
+
+    def _active_change_buttons(self):
+        self.change_question_button.setEnabled(True)
+        self.set_additional_button.setEnabled(True)
+        self.set_cicle_button.setEnabled(True)
 
     def update_table(self):
         self.order = self.med_repo.get_count_questions()
-        new_questions = self.med_repo.get_questions()
-        self._add_question_to_table(new_questions)
+        self.questions = self.med_repo.get_questions()
+        self._add_question_to_table(self.questions)
 
     def _add_question_to_table(self, question_list: list[Question]):
         self.questions_table.setRowCount(0)

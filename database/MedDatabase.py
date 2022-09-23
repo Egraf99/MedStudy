@@ -84,9 +84,18 @@ class MedDatabase:
                     self.execute(EnableAnswers.INSERT_ANSWER, question_id, answer_id)
 
     def get_questions_order(self):
-        questions_list = self.execute(Question.SELECT_NAME_ORDER, need_answer=True)
+        questions_list = self.execute(Question.SELECT_ORDER, need_answer=True)
         return list(
-            map(lambda question: Question.init_short(question[0], question[1], int(question[2])), questions_list))
+            map(lambda question: Question(id_=question[0],
+                                          name=question[1],
+                                          short=question[2],
+                                          single_answer=question[3],
+                                          require=question[4],
+                                          measure=question[5],
+                                          private=question[6],
+                                          order=question[7]
+                                          ),
+                questions_list))
 
 
 if __name__ == "__main__":
