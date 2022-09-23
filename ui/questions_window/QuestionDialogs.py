@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QDialog
 
 from MedRepo import MedRepo
-from database.entities.Entity import Question
+from database.entities.Entity import Question, Answer
 from ui.questions_window.QuestionDialogUI import Ui_Dialog
 
 
@@ -46,14 +46,16 @@ class QuestionDialog(QDialog, Ui_Dialog):
     def _take_measure(self) -> str:
         return self.measure_lineEdit.text()
 
-    def _take_question_have_bool_answer(self) -> bool:
-        return self.bool_answer_radioButton.isChecked()
+    def _take_question_type(self) -> int:
+        type_ = 0
+        if self.bool_answer_radioButton.isChecked():
+            type_ = 0
+        elif self.single_answer_radioButton.isChecked():
+            type_ = 1
+        elif self.many_answer_radioButton.isChecked():
+            type_ = 2
 
-    def _take_question_have_single_answer(self) -> bool:
-        return self.single_answer_radioButton.isChecked()
-
-    def _take_question_have_many_answer(self) -> bool:
-        return self.many_answer_radioButton.isChecked()
+        return type_
 
     def _take_require(self) -> bool:
         return self.require_checkBox.isChecked()
@@ -82,12 +84,12 @@ class QuestionDialog(QDialog, Ui_Dialog):
         self.short_question_lineEdit.setText(short)
 
     def _set_measure(self, measure: str):
-        if self._take_question_have_bool_answer(): return
-        self.measure_lineEdit.setText(measure)
+        if self._take_question_type() != 0:
+            self.measure_lineEdit.setText(measure)
 
-    def _set_all_answers(self, answers: list[str]):
+    def _set_enable_answers(self, answers: list[Answer]):
         for answer in answers:
-            self.answers_list.addItem(answer)
+            self.answers_list.addItem(answer.name)
 
     def _set_require(self, require: bool):
         self.require_checkBox.setChecked(require)
@@ -102,27 +104,19 @@ class AddNewQuestionDialog(QuestionDialog):
         self.save_question()
 
     def save_question(self):
-        name: str = self._take_question_name()
-        short: str = self._take_short_name()
-        private: bool = self._take_private()
-        require: bool = self._take_require()
+        type_ = self._take_question_type()
         question = Question(
-            name=name,
-            short=short,
-            require=require,
-            private=private,
+            name=self._take_question_name(),
+            short=self._take_short_name(),
+            type_=type_,
+            measure=self._take_measure(),
+            require=self._take_require(),
+            private=self._take_private(),
             order=self.number
         )
 
-        bool_answer: bool = self._take_question_have_bool_answer()
-        if not bool_answer:
-            measure = self._take_measure()
-            single_answer: bool = self._take_question_have_single_answer()
-            if not single_answer:
-                all_answers = self._take_all_answers()
-                question.set_type(Question.TypeAnswer.MANY, measure, all_answers)
-            else:
-                question.set_type(Question.TypeAnswer.SINGLE, measure)
+        if type_ == 2:
+            question.set_enable_answers(self._take_all_answers())
 
         self.med_repo.insert_question(question)
         self._after_save_func()
@@ -137,12 +131,13 @@ class UpdateQuestionDialog(QuestionDialog):
     def set_values(self, question: Question):
         self._set_question_name(question.name)
         self._set_short_name(question.short)
-        if question.type_ == Question.TypeAnswer.BOOL:
+        if question.type_ == 0:
             self._set_question_bool()
-        elif question.type_ == Question.TypeAnswer.SINGLE:
+        elif question.type_ == 1:
             self._set_question_single()
-        elif question.type_ == Question.TypeAnswer.MANY:
+        elif question.type_ == 2:
             self._set_question_many()
         self._set_measure(question.measure)
+        self._set_enable_answers(self.med_repo.get_enable_answers(question.id_))
         self._set_private(question.private_bool)
         self._set_require(question.require_bool)

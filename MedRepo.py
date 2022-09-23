@@ -1,5 +1,5 @@
 from database.MedDatabase import MedDatabase
-from database.entities.Entity import Patients, Question
+from database.entities.Entity import Patients, Question, Answer
 
 
 class Singleton(object):
@@ -26,4 +26,7 @@ class MedRepo(Singleton):
 
     def insert_question(self, question: Question):
         self.db.insert_question(question)
+
+    def get_enable_answers(self, question_id: int) -> list[Answer]:
+        return self.db.get_enable_answers(question_id)
 

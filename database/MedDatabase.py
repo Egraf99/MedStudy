@@ -33,16 +33,19 @@ class MedDatabase:
 
     def create_db(self):
         self.execute(Patients.CREATE_TABLE)
-        self.execute(Answers.CREATE_TABLE)
+        self.execute(Answer.CREATE_TABLE)
         self.execute(PatientAnswer.CREATE_TABLE)
         self.execute(Question.CREATE_TABLE)
         self.execute(EnableAnswers.CREATE_TABLE)
         self.execute(RepeatQuestions.CREATE_TABLE)
+        self.execute(QuestionType.CREATE_TABLE)
 
         # добавляем ответы Да и Нет с нужными id, если их еще нет в БД
-        if not self.execute(Answers.GET_BOOL_ANSWERS, need_answer=True):
-            self.execute(Answers.INSERT_INTO_WITH_ID, "0", "Нет")
-            self.execute(Answers.INSERT_INTO_WITH_ID, "1", "Да")
+        if not self.execute(Answer.GET_BOOL_ANSWERS, need_answer=True):
+            self.execute(Answer.INSERT_BOOL_ANSWER)
+
+        if not self.execute(QuestionType.GET_TYPES, need_answer=True):
+            self.execute(QuestionType.INSERT_TYPES)
 
     def add_patient(self, name: str, age: int, male: int):
         self.execute(Patients.INSERT_ALL, name, age, male)
@@ -67,35 +70,39 @@ class MedDatabase:
         return id_
 
     def insert_question(self, question: Question):
-        single_answer: int = 1 if question.type_ != Question.TypeAnswer.MANY else 0
         question_id = self._insert_entity_if_not_exist(Question.GET_ID_BY_NAME, question.name,
                                                        Question.INSERT,
-                                                       question.name, question.short, single_answer,
+                                                       question.name, question.short, question.type_, question.measure,
                                                        question.require_int, question.private_int, question.order)
-        if question.type_ == Question.TypeAnswer.BOOL:
+        if question.type_ == 0:
             self.execute(EnableAnswers.INSERT_NO_ANSWER, question_id)
             self.execute(EnableAnswers.INSERT_YES_ANSWER, question_id)
         else:
-            self.execute(Question.UPDATE_MEASURE, question.measure, question_id)
-            if question.type_ == Question.TypeAnswer.MANY and question.list_answers:
+            if question.type_ == 2 and question.list_answers:
                 for answer in question.list_answers:
-                    answer_id = self._insert_entity_if_not_exist(Answers.GET_ID_BY_TEXT, answer, Answers.INSERT_INTO,
+                    answer_id = self._insert_entity_if_not_exist(Answer.GET_ID_BY_TEXT, answer, Answer.INSERT_INTO,
                                                                  answer)
                     self.execute(EnableAnswers.INSERT_ANSWER, question_id, answer_id)
 
     def get_questions_order(self):
         questions_list = self.execute(Question.SELECT_ORDER, need_answer=True)
-        return list(
-            map(lambda question: Question(id_=question[0],
-                                          name=question[1],
-                                          short=question[2],
-                                          single_answer=question[3],
-                                          require=question[4],
-                                          measure=question[5],
-                                          private=question[6],
-                                          order=question[7]
-                                          ),
-                questions_list))
+        return list(map(lambda question: Question(id_=question[0],
+                                                  name=question[1],
+                                                  short=question[2],
+                                                  type_=question[3],
+                                                  require=question[4],
+                                                  measure=question[5],
+                                                  private=question[6],
+                                                  order=question[7],
+                                                  ),
+                        questions_list))
+
+    def get_enable_answers(self, question_id: int) -> list[Answer]:
+        answers_list = self.execute(EnableAnswers.SELECT_BY_QUESTION_ID, question_id, need_answer=True)
+        return list(map(lambda answer: Answer(id_=answer[0],
+                                              name=answer[1],
+                                              ),
+                        answers_list))
 
 
 if __name__ == "__main__":
