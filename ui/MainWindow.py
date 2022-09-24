@@ -113,7 +113,7 @@ class QuestionTable(QtWidgets.QTableWidget):
         for question in questions:
             self.add_question(question)
 
-    def get_selected_question(self) -> Question:
+    def get_selected_question_order(self) -> Question:
         # у выделенной строки берется значение из поля Порядок
         index = int(self.selectedItems()[2].text())
         return self.questions[index-1]

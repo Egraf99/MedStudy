@@ -31,7 +31,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.set_cicle_button.setEnabled(True)
 
     def _change_question(self):
-        UpdateQuestionDialog(self.questions_table.get_selected_question()).exec()
+        UpdateQuestionDialog(self.questions_table.get_selected_question_order(), parent=self, after_save_func=self.update_table).exec()
 
     def update_table(self):
         self.order = self.med_repo.get_count_questions()

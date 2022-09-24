@@ -1,3 +1,5 @@
+from typing import Optional
+
 from database.MedDatabase import MedDatabase
 from database.entities.Entity import Patients, Question, Answer
 
@@ -29,4 +31,10 @@ class MedRepo(Singleton):
 
     def get_enable_answers(self, question_id: int) -> list[Answer]:
         return self.db.get_enable_answers(question_id)
+
+    def update_question(self, question: Question):
+        self.db.update_question(question)
+
+    def get_question_id_by_name(self, name: str) -> Optional[int]:
+        return self.db.get_question_id_by_name(name)
 

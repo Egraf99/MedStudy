@@ -22,14 +22,14 @@ class QuestionDialog(QDialog, Ui_Dialog):
     def connection_signal_slot(self):
         self.add_answer_button.clicked.connect(self.add_new_answer)
         self.delete_answer_button.clicked.connect(self.delete_answer_from_list)
-        self.saveAndCloseButtonsBox.accepted.connect(self.save_button_clicked)
-
-    def save_button_clicked(self):
-        self._after_save_func()
+        self.saveAndCloseButtonsBox.accepted.connect(self.save_question)
 
     def add_new_answer(self):
         self.answers_list.addItem(self.add_answer_lineEdit.text())
         self.add_answer_lineEdit.clear()
+
+    def save_question(self):
+        if self._after_save_func: self._after_save_func()
 
     def delete_answer_from_list(self):
         listItems = self.answers_list.selectedItems()
@@ -99,10 +99,6 @@ class QuestionDialog(QDialog, Ui_Dialog):
 
 
 class AddNewQuestionDialog(QuestionDialog):
-    def save_button_clicked(self):
-        super(AddNewQuestionDialog, self).save_button_clicked()
-        self.save_question()
-
     def save_question(self):
         type_ = self._take_question_type()
         question = Question(
@@ -119,14 +115,35 @@ class AddNewQuestionDialog(QuestionDialog):
             question.set_enable_answers(self._take_all_answers())
 
         self.med_repo.insert_question(question)
-        self._after_save_func()
+        super().save_question()
 
 
 class UpdateQuestionDialog(QuestionDialog):
     def __init__(self, question: Question, after_save_func=None, parent=None):
         super().__init__(question.order, after_save_func, parent)
-        self.question = question
+        self.old_question = question
         self.set_values(question)
+
+    def save_question(self):
+        type_ = self._take_question_type()
+        question = Question(
+            name=self._take_question_name(),
+            short=self._take_short_name(),
+            type_=type_,
+            measure=self._take_measure(),
+            require=self._take_require(),
+            private=self._take_private(),
+            order=self.number
+        )
+        id_ = self.med_repo.get_question_id_by_name(self.old_question.name)
+        if id_ is not None:
+            question.id_ = id_
+
+        if type_ == 2:
+            question.set_enable_answers(self._take_all_answers())
+
+        self.med_repo.update_question(question)
+        super().save_question()
 
     def set_values(self, question: Question):
         self._set_question_name(question.name)

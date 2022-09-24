@@ -144,5 +144,5 @@ class Ui_Dialog(object):
         self.label_2.setText(_translate("Dialog", "Ед. измер."))
         self.add_answer_button.setText(_translate("Dialog", "Добавить"))
         self.delete_answer_button.setText(_translate("Dialog", "Удалить"))
-        self.private_checkBox.setText(_translate("Dialog", "Указание на личность пациента"))
-        self.require_checkBox.setText(_translate("Dialog", "Обязательный вопрос"))
+        self.private_checkBox.setText(_translate("Dialog", "&Указание на личность пациента"))
+        self.require_checkBox.setText(_translate("Dialog", "&Обязательный вопрос"))

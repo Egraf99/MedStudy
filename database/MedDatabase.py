@@ -50,23 +50,20 @@ class MedDatabase:
     def add_patient(self, name: str, age: int, male: int):
         self.execute(Patients.INSERT_ALL, name, age, male)
 
-    def get_last_rowid(self) -> int:
-        query = """
-            SELECT last_insert_rowid()
-            """
-
-        print(self.execute(query, need_answer=True)[0][0])
-        return self.execute(query, need_answer=True)[0][0]
-
     def get_count_questions(self) -> int:
         return self.execute(Question.GET_COUNT, need_answer=True)[0][0] + 1
 
-    def _insert_entity_if_not_exist(self, check_query: str, check_field, insert_query: str, *insert_fields) -> int:
+    def _get_id(self, check_query: str, check_field) -> Optional[int]:
         try:
-            id_ = self.execute(check_query, check_field, need_answer=True)[0][0]
+            return self.execute(check_query, check_field, need_answer=True)[0][0]
         except IndexError:
+            return None
+
+    def _insert_entity_if_not_exist(self, check_query: str, check_field, insert_query: str, *insert_fields) -> int:
+        id_ = self._get_id(check_query, check_field)
+        if id_ is None:
             self.execute(insert_query, *insert_fields)
-            id_ = self.execute(check_query, check_field, need_answer=True)[0][0]
+            id_ = self._get_id(check_query, check_field)
         return id_
 
     def insert_question(self, question: Question):
@@ -83,6 +80,10 @@ class MedDatabase:
                     answer_id = self._insert_entity_if_not_exist(Answer.GET_ID_BY_TEXT, answer, Answer.INSERT_INTO,
                                                                  answer)
                     self.execute(EnableAnswers.INSERT_ANSWER, question_id, answer_id)
+
+    def get_question_id_by_name(self, name: str) -> Optional[int]:
+        id_ = self._get_id(Question.GET_ID_BY_NAME, name)
+        return id_
 
     def get_questions_order(self):
         questions_list = self.execute(Question.SELECT_ORDER, need_answer=True)
@@ -103,6 +104,22 @@ class MedDatabase:
                                               name=answer[1],
                                               ),
                         answers_list))
+
+    def update_question(self, question: Question):
+        self.execute(Question.UPDATE_QUESTION,
+                     question.name,
+                     question.short,
+                     question.type_,
+                     question.measure,
+                     question.require_int,
+                     question.private_int,
+                     question.id_,
+                     )
+        self.execute(EnableAnswers.DELETE_ANSWERS_FROM_QUESTION, question.id_)
+        if question.list_answers:
+            for answer in question.list_answers:
+                answer_id = self.execute(Answer.GET_ID_BY_TEXT, answer)
+                self.execute(EnableAnswers.INSERT_ANSWER, question.id_, answer_id)
 
 
 if __name__ == "__main__":

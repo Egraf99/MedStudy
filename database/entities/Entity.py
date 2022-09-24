@@ -1,6 +1,3 @@
-from enum import Enum
-
-
 class Patients:
     def __init__(self, name: str, age: int, male: int):
         self.name = name
@@ -24,11 +21,44 @@ class Patients:
         """
 
 
+class Answer:
+    CREATE_TABLE: str = """
+        CREATE TABLE IF NOT EXISTS Answer (
+            id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL UNIQUE
+        )
+        """
+
+    INSERT_BOOL_ANSWER: str = """
+        INSERT INTO Answer (id, name) VALUES 
+            (0, "Нет"),
+            (1, "Да")
+        """
+
+    INSERT_INTO: str = """
+        INSERT INTO Answer (name) VALUES (?)
+        """
+
+    GET_BOOL_ANSWERS: str = """
+        SELECT * FROM Answer WHERE id IN (0,1)
+        """
+
+    GET_ID_BY_TEXT: str = """
+        SELECT id FROM Answer WHERE name = ?
+        """
+
+    def __init__(self,
+                 id_: int,
+                 name: str):
+        self.id_ = id_
+        self.name = name
+
+
 class Question:
     CREATE_TABLE: str = """
         CREATE TABLE IF NOT EXISTS Question ( 
             id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-            question TEXT NOT NULL UNIQUE,
+            name TEXT NOT NULL UNIQUE,
             short TEXT,
             type_answer INTEGER NOT NULL DEFAULT 0,
             require INTEGER NOT NULL DEFAULT 0 CHECK (require IN (0,1)),
@@ -37,6 +67,16 @@ class Question:
             order_int INTEGER NOT NULL UNIQUE,
             FOREIGN KEY (type_answer) REFERENCES QuestionType(id)
         )"""
+
+    UPDATE_QUESTION: str = """
+        UPDATE Question SET 
+            name = ?,
+            short = ?,
+            type_answer = ?,
+            measure = ?,
+            require = ?,
+            private = ? 
+        WHERE id = ?"""
 
     SELECT_ORDER: str = """
         SELECT * FROM Question ORDER BY order_int ASC
@@ -48,7 +88,7 @@ class Question:
 
     INSERT: str = """
         INSERT INTO Question (
-            question,
+            name,
             short, 
             type_answer, 
             measure,
@@ -59,7 +99,7 @@ class Question:
         VALUES (?,?,?,?,?,?,?)"""
 
     GET_ID_BY_NAME: str = """
-        SELECT id FROM Question WHERE question = ?
+        SELECT id FROM Question WHERE name = ?
         """
 
     def __init__(self,
@@ -103,39 +143,6 @@ class PatientAnswer:
         """
 
 
-class Answer:
-    CREATE_TABLE: str = """
-        CREATE TABLE IF NOT EXISTS Answer (
-            id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL UNIQUE
-        )
-        """
-
-    INSERT_BOOL_ANSWER: str = """
-        INSERT INTO Answer (id, name) VALUES 
-            (0, "Нет"),
-            (1, "Да")
-        """
-
-    INSERT_INTO: str = """
-        INSERT INTO Answer (name) VALUES (?)
-        """
-
-    GET_BOOL_ANSWERS: str = """
-        SELECT * FROM Answer WHERE id IN (0,1)
-        """
-
-    GET_ID_BY_TEXT: str = """
-        SELECT id FROM Answer WHERE name = ?
-        """
-
-    def __init__(self,
-                 id_: int,
-                 name: str):
-        self.id_ = id_
-        self.name = name
-
-
 class EnableAnswers:
     CREATE_TABLE: str = """
         CREATE TABLE IF NOT EXISTS EnableAnswers (
@@ -165,6 +172,11 @@ class EnableAnswers:
         INNER JOIN Answer a ON ea.answer_id = a.id
         WHERE ea.question_id = ?
         """
+
+    DELETE_ANSWERS_FROM_QUESTION: str = """
+        DELETE FROM EnableAnswers WHERE question_id = ?
+        """
+
 
 class RepeatQuestions:
     CREATE_TABLE: str = """
