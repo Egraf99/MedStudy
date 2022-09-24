@@ -78,7 +78,19 @@ class Question:
             private = ? 
         WHERE id = ?"""
 
-    SELECT_ORDER: str = """
+    DELETE_BY_ID: str = """
+        DELETE FROM Question WHERE id = ?
+        """
+
+    UPDATE_ORDER: str = """
+        UPDATE Question SET order_int = order_int - 1 WHERE order_int > ?
+        """
+
+    SELECT_ORDER_BY_ID: str = """
+        SELECT order_int FROM Question WHERE id = ?
+        """
+
+    SELECT_ALL_ORDER_ASC: str = """
         SELECT * FROM Question ORDER BY order_int ASC
         """
 
@@ -152,6 +164,10 @@ class EnableAnswers:
             FOREIGN KEY (question_id) REFERENCES Question(id),
             FOREIGN KEY (answer_id) REFERENCES Answer(id)
         )
+        """
+
+    DELETE_QUESTION_BY_ID: str = """
+        DELETE FROM EnableAnswers WHERE question_id = ?
         """
 
     INSERT_NO_ANSWER: str = """

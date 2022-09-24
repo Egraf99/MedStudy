@@ -38,3 +38,6 @@ class MedRepo(Singleton):
     def get_question_id_by_name(self, name: str) -> Optional[int]:
         return self.db.get_question_id_by_name(name)
 
+    def delete_question(self, question_id: int):
+        self.db.delete_question(question_id)
+

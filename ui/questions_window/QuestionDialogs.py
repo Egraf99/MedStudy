@@ -6,13 +6,13 @@ from ui.questions_window.QuestionDialogUI import Ui_Dialog
 
 
 class QuestionDialog(QDialog, Ui_Dialog):
-    def __init__(self, number: int, after_save_func=None, parent=None):
+    def __init__(self, number: int, after_update_func=None, parent=None):
         super().__init__(parent)
         self.setupUi(self)
         self.number = number
         self.update_number(self.number)
-        if after_save_func:
-            self._after_save_func = after_save_func
+        if after_update_func:
+            self._after_update_func = after_update_func
         self.med_repo = MedRepo()
         self.connection_signal_slot()
 
@@ -29,7 +29,10 @@ class QuestionDialog(QDialog, Ui_Dialog):
         self.add_answer_lineEdit.clear()
 
     def save_question(self):
-        if self._after_save_func: self._after_save_func()
+        pass
+
+    def after_update_func(self):
+        if self._after_update_func: self._after_update_func()
 
     def delete_answer_from_list(self):
         listItems = self.answers_list.selectedItems()
@@ -115,14 +118,24 @@ class AddNewQuestionDialog(QuestionDialog):
             question.set_enable_answers(self._take_all_answers())
 
         self.med_repo.insert_question(question)
-        super().save_question()
+        self.after_update_func()
 
 
 class UpdateQuestionDialog(QuestionDialog):
     def __init__(self, question: Question, after_save_func=None, parent=None):
         super().__init__(question.order, after_save_func, parent)
+        self.set_delete_button()
         self.old_question = question
         self.set_values(question)
+
+    def connection_signal_slot(self):
+        super().connection_signal_slot()
+        self.delete_button.clicked.connect(self._delete_button_clicked)
+
+    def _delete_button_clicked(self):
+        self.med_repo.delete_question(self.old_question.id_)
+        self.after_update_func()
+        self.reject()
 
     def save_question(self):
         type_ = self._take_question_type()
@@ -135,9 +148,7 @@ class UpdateQuestionDialog(QuestionDialog):
             private=self._take_private(),
             order=self.number
         )
-        id_ = self.med_repo.get_question_id_by_name(self.old_question.name)
-        if id_ is not None:
-            question.id_ = id_
+        question.id_ = self.med_repo.get_question_id_by_name(self.old_question.name)
 
         if type_ == 2:
             question.set_enable_answers(self._take_all_answers())

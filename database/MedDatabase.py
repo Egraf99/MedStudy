@@ -86,7 +86,7 @@ class MedDatabase:
         return id_
 
     def get_questions_order(self):
-        questions_list = self.execute(Question.SELECT_ORDER, need_answer=True)
+        questions_list = self.execute(Question.SELECT_ALL_ORDER_ASC, need_answer=True)
         return list(map(lambda question: Question(id_=question[0],
                                                   name=question[1],
                                                   short=question[2],
@@ -120,6 +120,12 @@ class MedDatabase:
             for answer in question.list_answers:
                 answer_id = self.execute(Answer.GET_ID_BY_TEXT, answer)
                 self.execute(EnableAnswers.INSERT_ANSWER, question.id_, answer_id)
+
+    def delete_question(self, question_id: int):
+        order = self.execute(Question.SELECT_ORDER_BY_ID, question_id, need_answer=True)[0][0]
+        self.execute(Question.DELETE_BY_ID, question_id)
+        self.execute(Question.UPDATE_ORDER, order)
+        self.execute(EnableAnswers.DELETE_QUESTION_BY_ID, question_id)
 
 
 if __name__ == "__main__":

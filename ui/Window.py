@@ -23,7 +23,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.change_question_button.clicked.connect(self._change_question)
 
     def _add_question_show(self):
-        AddNewQuestionDialog(self.order, parent=self, after_save_func=self.update_table).exec()
+        AddNewQuestionDialog(self.order, parent=self, after_update_func=self.update_table).exec()
 
     def _active_change_buttons(self):
         self.change_question_button.setEnabled(True)
