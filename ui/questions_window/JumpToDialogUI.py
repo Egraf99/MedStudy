@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_JumpToDialog(object):
     def setupUi(self, JumpToDialog):
         JumpToDialog.setObjectName("JumpToDialog")
-        JumpToDialog.resize(580, 234)
+        JumpToDialog.resize(580, 144)
         self.verticalLayout_4 = QtWidgets.QVBoxLayout(JumpToDialog)
         self.verticalLayout_4.setObjectName("verticalLayout_4")
         self.question_comboBox = QtWidgets.QGroupBox(JumpToDialog)
@@ -43,11 +43,6 @@ class Ui_JumpToDialog(object):
         self.verticalLayout_2.addWidget(self.jump_comboBox)
         self.horizontalLayout.addLayout(self.verticalLayout_2)
         self.verticalLayout_4.addWidget(self.question_comboBox)
-        self.error_label = QtWidgets.QLabel(JumpToDialog)
-        self.error_label.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
-        self.error_label.setIndent(-1)
-        self.error_label.setObjectName("error_label")
-        self.verticalLayout_4.addWidget(self.error_label)
         self.saveAndCancelButtonBox = QtWidgets.QDialogButtonBox(JumpToDialog)
         self.saveAndCancelButtonBox.setOrientation(QtCore.Qt.Horizontal)
         self.saveAndCancelButtonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Save)
@@ -65,4 +60,3 @@ class Ui_JumpToDialog(object):
         self.question_comboBox.setTitle(_translate("JumpToDialog", "Вопрос"))
         self.answer_label.setText(_translate("JumpToDialog", "Ответ"))
         self.jump_label.setText(_translate("JumpToDialog", "Перепрыгнуть на:"))
-        self.error_label.setText(_translate("JumpToDialog", "<html><head/><body><p><br/></p></body></html>"))

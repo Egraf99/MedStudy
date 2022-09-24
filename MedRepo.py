@@ -46,3 +46,6 @@ class MedRepo(Singleton):
 
     def update_jump(self, question_id: int, answer_id: int, destination_id: int):
         self.db.update_jump(question_id, answer_id, destination_id)
+
+    def update_circle(self, question_id: int, start_id: int, finish_id: int):
+        self.db.update_circle(question_id, start_id, finish_id)

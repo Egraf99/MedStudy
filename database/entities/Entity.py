@@ -201,6 +201,7 @@ class EnableAnswers:
         UPDATE EnableAnswers SET jump_to_question = ? WHERE question_id = ? AND answer_id =?
         """
 
+
 class RepeatQuestions:
     CREATE_TABLE: str = """
         CREATE TABLE IF NOT EXISTS RepeatQuestions (
@@ -208,6 +209,15 @@ class RepeatQuestions:
             from_question INTEGER NOT NULL,
             to_question INTEGER NOT NULL
         ) 
+        """
+
+    DELETE_QUESTION: str = """
+        DELETE FROM RepeatQuestions WHERE question_id = ?
+        """
+
+    INSERT_REPEAT: str = """
+        INSERT INTO RepeatQuestions (question_id, from_question, to_question)
+        VALUES (?,?,?)
         """
 
 

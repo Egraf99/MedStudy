@@ -138,6 +138,10 @@ class MedDatabase:
     def update_jump(self, question_id: int, answer_id: int, destination_id: int):
         self.execute(EnableAnswers.UPDATE_JUMP, destination_id, question_id, answer_id)
 
+    def update_circle(self, question_id: int, start_id: int, finish_id: int):
+        self.execute(RepeatQuestions.DELETE_QUESTION, question_id)
+        self.execute(RepeatQuestions.INSERT_REPEAT, question_id, start_id, finish_id)
+
 
 if __name__ == "__main__":
     MedDatabase().add_patient("Ваня", 22, 0)

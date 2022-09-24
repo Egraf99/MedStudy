@@ -61,10 +61,10 @@ class Ui_MainWindow(object):
         self.set_additional_button.setEnabled(False)
         self.set_additional_button.setObjectName("set_additional_button")
         self.verticalLayout.addWidget(self.set_additional_button)
-        self.set_cicle_button = QtWidgets.QPushButton(self.centralwidget)
-        self.set_cicle_button.setEnabled(False)
-        self.set_cicle_button.setObjectName("set_cicle_button")
-        self.verticalLayout.addWidget(self.set_cicle_button)
+        self.set_circle_button = QtWidgets.QPushButton(self.centralwidget)
+        self.set_circle_button.setEnabled(False)
+        self.set_circle_button.setObjectName("set_circle_button")
+        self.verticalLayout.addWidget(self.set_circle_button)
         self.horizontalLayout.addLayout(self.verticalLayout)
         self.verticalLayout_2.addLayout(self.horizontalLayout)
         self.verticalLayout_3.addLayout(self.verticalLayout_2)
@@ -88,7 +88,7 @@ class Ui_MainWindow(object):
         item.setText(_translate("MainWindow", "Порядок"))
         self.change_question_button.setText(_translate("MainWindow", "Изменить"))
         self.set_additional_button.setText(_translate("MainWindow", "Установить прыжок"))
-        self.set_cicle_button.setText(_translate("MainWindow", "Установить цикл"))
+        self.set_circle_button.setText(_translate("MainWindow", "Установить цикл"))
 
 
 class QuestionTable(QtWidgets.QTableWidget):
@@ -113,7 +113,7 @@ class QuestionTable(QtWidgets.QTableWidget):
         for question in questions:
             self.add_question(question)
 
-    def get_selected_question_order(self) -> Question:
+    def get_selected_question(self) -> Question:
         # у выделенной строки берется значение из поля Порядок
         index = int(self.selectedItems()[2].text())
         return self.questions[index-1]

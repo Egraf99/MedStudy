@@ -154,7 +154,7 @@ class UpdateQuestionDialog(QuestionDialog):
             question.set_enable_answers(self._take_all_answers())
 
         self.med_repo.update_question(question)
-        super().save_question()
+        self.after_update_func()
 
     def set_values(self, question: Question):
         self._set_question_name(question.name)
