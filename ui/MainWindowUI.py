@@ -87,7 +87,7 @@ class Ui_MainWindow(object):
         item = self.questions_table.horizontalHeaderItem(2)
         item.setText(_translate("MainWindow", "Порядок"))
         self.change_question_button.setText(_translate("MainWindow", "Изменить"))
-        self.set_additional_button.setText(_translate("MainWindow", "Установить доп. вопросы"))
+        self.set_additional_button.setText(_translate("MainWindow", "Установить прыжок"))
         self.set_cicle_button.setText(_translate("MainWindow", "Установить цикл"))
 
 

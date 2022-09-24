@@ -94,6 +94,10 @@ class Question:
         SELECT * FROM Question ORDER BY order_int ASC
         """
 
+    SELECT_ALL_FROM_ORDER: str = """
+        SELECT * FROM Question WHERE order_int > ? ORDER BY order_int ASC
+        """
+
     GET_COUNT: str = """
         SELECT COUNT(*) FROM Question
         """
@@ -193,6 +197,9 @@ class EnableAnswers:
         DELETE FROM EnableAnswers WHERE question_id = ?
         """
 
+    UPDATE_JUMP: str = """
+        UPDATE EnableAnswers SET jump_to_question = ? WHERE question_id = ? AND answer_id =?
+        """
 
 class RepeatQuestions:
     CREATE_TABLE: str = """

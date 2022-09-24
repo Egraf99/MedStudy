@@ -165,7 +165,7 @@ class UpdateQuestionDialog(QuestionDialog):
             self._set_question_single()
         elif question.type_ == 2:
             self._set_question_many()
+            self._set_enable_answers(self.med_repo.get_enable_answers(question.id_))
         self._set_measure(question.measure)
-        self._set_enable_answers(self.med_repo.get_enable_answers(question.id_))
         self._set_private(question.private_bool)
         self._set_require(question.require_bool)

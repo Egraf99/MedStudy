@@ -41,3 +41,8 @@ class MedRepo(Singleton):
     def delete_question(self, question_id: int):
         self.db.delete_question(question_id)
 
+    def get_question_witch_more_than_order(self, order: int) -> list[Question]:
+        return self.db.get_question_witch_more_than_order(order)
+
+    def update_jump(self, question_id: int, answer_id: int, destination_id: int):
+        self.db.update_jump(question_id, answer_id, destination_id)

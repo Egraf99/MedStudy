@@ -4,6 +4,19 @@ from typing import Optional
 from database.entities.Entity import *
 
 
+def _list_question_from_response(questions_list_response: list) -> list[Question]:
+    return list(map(lambda question: Question(id_=question[0],
+                                              name=question[1],
+                                              short=question[2],
+                                              type_=question[3],
+                                              require=question[4],
+                                              measure=question[5],
+                                              private=question[6],
+                                              order=question[7],
+                                              ),
+                    questions_list_response))
+
+
 class MedDatabase:
     NAME_DB: str = "./med.db"
 
@@ -87,16 +100,7 @@ class MedDatabase:
 
     def get_questions_order(self):
         questions_list = self.execute(Question.SELECT_ALL_ORDER_ASC, need_answer=True)
-        return list(map(lambda question: Question(id_=question[0],
-                                                  name=question[1],
-                                                  short=question[2],
-                                                  type_=question[3],
-                                                  require=question[4],
-                                                  measure=question[5],
-                                                  private=question[6],
-                                                  order=question[7],
-                                                  ),
-                        questions_list))
+        return _list_question_from_response(questions_list)
 
     def get_enable_answers(self, question_id: int) -> list[Answer]:
         answers_list = self.execute(EnableAnswers.SELECT_BY_QUESTION_ID, question_id, need_answer=True)
@@ -126,6 +130,13 @@ class MedDatabase:
         self.execute(Question.DELETE_BY_ID, question_id)
         self.execute(Question.UPDATE_ORDER, order)
         self.execute(EnableAnswers.DELETE_QUESTION_BY_ID, question_id)
+
+    def get_question_witch_more_than_order(self, order: int) -> list[Question]:
+        questions_list = self.execute(Question.SELECT_ALL_FROM_ORDER, order, need_answer=True)
+        return _list_question_from_response(questions_list)
+
+    def update_jump(self, question_id: int, answer_id: int, destination_id: int):
+        self.execute(EnableAnswers.UPDATE_JUMP, destination_id, question_id, answer_id)
 
 
 if __name__ == "__main__":

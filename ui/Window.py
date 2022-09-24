@@ -2,8 +2,9 @@ from PyQt5.QtWidgets import QMainWindow, QDialog, QTableWidgetItem
 
 from MedRepo import MedRepo
 from database.entities.Entity import Question
+from ui.questions_window.JumpToAndCicleDialogs import JumpToDialog
 from ui.questions_window.QuestionDialogUI import Ui_Dialog
-from ui.MainWindow import Ui_MainWindow
+from ui.MainWindowUI import Ui_MainWindow
 from ui.questions_window.QuestionDialogs import AddNewQuestionDialog, UpdateQuestionDialog
 
 
@@ -21,9 +22,16 @@ class Window(QMainWindow, Ui_MainWindow):
         self.new_question_button.clicked.connect(self._add_question_show)
         self.questions_table.cellPressed.connect(self._active_change_buttons)
         self.change_question_button.clicked.connect(self._change_question)
+        self.set_additional_button.clicked.connect(self._jump_to_dialog_show)
 
     def _add_question_show(self):
         AddNewQuestionDialog(self.order, parent=self, after_update_func=self.update_table).exec()
+
+    def _jump_to_dialog_show(self):
+        question = self.questions_table.get_selected_question_order()
+        JumpToDialog(question, parent=self).exec()
+
+
 
     def _active_change_buttons(self):
         self.change_question_button.setEnabled(True)
