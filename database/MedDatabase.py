@@ -17,6 +17,15 @@ def _list_question_from_response(questions_list_response: list) -> list[Question
                     questions_list_response))
 
 
+def _list_patients_from_response(patients_list_response: list) -> list[Patient]:
+    return list(map(lambda patient: Patient(id_=patient[0],
+                                            name=patient[1],
+                                            age=patient[2],
+                                            male=patient[3],
+                                            ),
+                    patients_list_response))
+
+
 class MedDatabase:
     NAME_DB: str = "./med.db"
 
@@ -45,7 +54,7 @@ class MedDatabase:
             close()
 
     def create_db(self):
-        self.execute(Patients.CREATE_TABLE)
+        self.execute(Patient.CREATE_TABLE)
         self.execute(Answer.CREATE_TABLE)
         self.execute(PatientAnswer.CREATE_TABLE)
         self.execute(Question.CREATE_TABLE)
@@ -61,7 +70,7 @@ class MedDatabase:
             self.execute(QuestionType.INSERT_TYPES)
 
     def add_patient(self, name: str, age: int, male: int):
-        self.execute(Patients.INSERT_ALL, name, age, male)
+        self.execute(Patient.INSERT_ALL, name, age, male)
 
     def get_count_questions(self) -> int:
         return self.execute(Question.GET_COUNT, need_answer=True)[0][0] + 1
@@ -141,6 +150,9 @@ class MedDatabase:
     def update_circle(self, question_id: int, start_id: int, finish_id: int):
         self.execute(RepeatQuestions.DELETE_QUESTION, question_id)
         self.execute(RepeatQuestions.INSERT_REPEAT, question_id, start_id, finish_id)
+
+    def get_patients(self) -> list[Patient]:
+        return _list_patients_from_response(self.execute(Patient.SELECT_ALL, need_answer=True))
 
 
 if __name__ == "__main__":

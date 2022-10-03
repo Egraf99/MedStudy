@@ -1,7 +1,7 @@
 from typing import Optional
 
 from database.MedDatabase import MedDatabase
-from database.entities.Entity import Patients, Question, Answer
+from database.entities.Entity import Patient, Question, Answer
 
 
 class Singleton(object):
@@ -17,7 +17,7 @@ class MedRepo(Singleton):
     def __init__(self):
         self.db = MedDatabase()
 
-    def add_patient(self, patient: Patients):
+    def add_patient(self, patient: Patient):
         self.db.add_patient(patient.name, patient.age, patient.male)
 
     def get_count_questions(self) -> int:
@@ -49,3 +49,6 @@ class MedRepo(Singleton):
 
     def update_circle(self, question_id: int, start_id: int, finish_id: int):
         self.db.update_circle(question_id, start_id, finish_id)
+
+    def get_patients_name(self) -> list[Patient]:
+        return self.db.get_patients()

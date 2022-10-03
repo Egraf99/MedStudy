@@ -1,5 +1,6 @@
-class Patients:
-    def __init__(self, name: str, age: int, male: int):
+class Patient:
+    def __init__(self, id_: int, name: str, age: int, male: int):
+        self.id = id_
         self.name = name
         self.age = age
         self.male = male
@@ -18,6 +19,10 @@ class Patients:
 
     GET_COUNT: str = """
         SELECT COUNT(*) FROM Patients
+        """
+
+    SELECT_ALL: str = """
+        SELECT * FROM Patients ORDER BY name ASC
         """
 
 
@@ -151,7 +156,7 @@ class PatientAnswer:
             patient_id INTEGER NOT NULL,
             question_id INTEGER NOT NULL,
             answer_id INTEGER NOT NULL,
-            FOREIGN KEY (patient_id) REFERENCES Patients(id),
+            FOREIGN KEY (patient_id) REFERENCES Patient(id),
             FOREIGN KEY (question_id) REFERENCES Question(id),
             FOREIGN KEY (answer_id) REFERENCES Answer(id),
             UNIQUE (patient_id, question_id, answer_id)
@@ -241,5 +246,5 @@ class QuestionType:
 
 
 if __name__ == '__main__':
-    pat = Patients("Egor", 23, 0)
+    pat = Patient("Egor", 23, 0)
     print(pat.male)
