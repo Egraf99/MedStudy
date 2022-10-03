@@ -1,5 +1,5 @@
 class Patient:
-    def __init__(self, id_: int, name: str, age: int, male: int):
+    def __init__(self, id_: int, name: str, male: int, age: int):
         self.id = id_
         self.name = name
         self.age = age
@@ -23,6 +23,10 @@ class Patient:
 
     SELECT_ALL: str = """
         SELECT * FROM Patients ORDER BY name ASC
+        """
+
+    DELETE: str = """
+        DELETE FROM Patients WHERE id = ?
         """
 
 

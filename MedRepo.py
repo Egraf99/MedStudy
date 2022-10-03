@@ -52,3 +52,6 @@ class MedRepo(Singleton):
 
     def get_patients_name(self) -> list[Patient]:
         return self.db.get_patients()
+
+    def delete_patient(self, patient_id):
+        self.db.delete_patient(patient_id)

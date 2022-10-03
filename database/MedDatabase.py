@@ -20,8 +20,8 @@ def _list_question_from_response(questions_list_response: list) -> list[Question
 def _list_patients_from_response(patients_list_response: list) -> list[Patient]:
     return list(map(lambda patient: Patient(id_=patient[0],
                                             name=patient[1],
-                                            age=patient[2],
-                                            male=patient[3],
+                                            male=patient[2],
+                                            age=patient[3],
                                             ),
                     patients_list_response))
 
@@ -153,6 +153,9 @@ class MedDatabase:
 
     def get_patients(self) -> list[Patient]:
         return _list_patients_from_response(self.execute(Patient.SELECT_ALL, need_answer=True))
+
+    def delete_patient(self, patient_id: int):
+        self.execute(Patient.DELETE, patient_id)
 
 
 if __name__ == "__main__":
