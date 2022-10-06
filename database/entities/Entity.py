@@ -187,8 +187,8 @@ class EnableAnswers:
         )
         """
 
-    DELETE_QUESTION_BY_ID: str = """
-        DELETE FROM EnableAnswers WHERE question_id = ?
+    DELETE_QUESTION_AND_ANSWER: str = """
+        DELETE FROM EnableAnswers WHERE question_id = ? AND answer_id = ?
         """
 
     INSERT_NO_ANSWER: str = """

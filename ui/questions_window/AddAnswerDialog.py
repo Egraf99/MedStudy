@@ -38,7 +38,9 @@ class AddAnswerDialog(Ui_AddAnswerDialog, QDialog):
     def _update_answers(self, list_answers: list[Answer]):
         if not list_answers: return
         for answer in list_answers:
-            self.answers_list.addItem(answer.name)
+            item = QListWidgetItem(answer.name)
+            item.setData(QtCore.Qt.UserRole, answer.id_)
+            self.answers_list.addItem(item)
 
     def _connection_signal_slot(self):
         self.add_answer_button.clicked.connect(lambda: self.add_new_answer(self.add_answer_lineEdit.text()))
@@ -63,6 +65,7 @@ class AddAnswerDialog(Ui_AddAnswerDialog, QDialog):
             type_ = 2
 
         return type_
+
     def add_new_answer(self, answer: str):
         if answer == "": return
         answer_id = self.med_repo.add_answer_to_question(answer, self.question.id_)
@@ -75,4 +78,6 @@ class AddAnswerDialog(Ui_AddAnswerDialog, QDialog):
         listItems = self.answers_list.selectedItems()
         if not listItems: return
         for item in listItems:
+            answer_id = int(item.data(QtCore.Qt.UserRole))
+            self.med_repo.delete_question_with_answer(self.question.id_, answer_id)
             self.answers_list.takeItem(self.answers_list.row(item))

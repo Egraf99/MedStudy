@@ -128,8 +128,8 @@ class MedDatabase:
                      question.private_int,
                      question.id_,
                      )
-        self.execute(EnableAnswers.DELETE_ANSWERS_FROM_QUESTION, question.id_)
         if question.list_answers:
+            self.execute(EnableAnswers.DELETE_ANSWERS_FROM_QUESTION, question.id_)
             for answer in question.list_answers:
                 answer_id = self.execute(Answer.GET_ID_BY_TEXT, answer)
                 self.execute(EnableAnswers.INSERT_ANSWER, question.id_, answer_id)
@@ -138,7 +138,7 @@ class MedDatabase:
         order = self.execute(Question.SELECT_ORDER_BY_ID, question_id, need_answer=True)[0][0]
         self.execute(Question.DELETE_BY_ID, question_id)
         self.execute(Question.UPDATE_ORDER, order)
-        self.execute(EnableAnswers.DELETE_QUESTION_BY_ID, question_id)
+        self.execute(EnableAnswers.DELETE_ANSWERS_FROM_QUESTION, question_id)
 
     def get_question_witch_more_than_order(self, order: int) -> list[Question]:
         questions_list = self.execute(Question.SELECT_ALL_FROM_ORDER, order, need_answer=True)
@@ -160,6 +160,10 @@ class MedDatabase:
     def add_answer_to_question(self, answer: str, question_id: int):
         answer_id = self._insert_entity_if_not_exist(Answer.GET_ID_BY_TEXT, answer, Answer.INSERT_INTO, answer)
         self.execute(EnableAnswers.INSERT_ANSWER, question_id, answer_id)
+
+    def delete_question_with_answer(self, question_id: int, answer_id: int):
+        self.execute(EnableAnswers.DELETE_QUESTION_AND_ANSWER, question_id, answer_id)
+
 
 if __name__ == "__main__":
     MedDatabase().add_patient("Ваня", 22, 0)
