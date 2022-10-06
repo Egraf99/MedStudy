@@ -134,6 +134,9 @@ class Question:
         BOOL = 0
         SINGLE = 1
         MANY = 2
+        INTEGER = 3
+        FLOAT = 4
+        TEXT = 5
 
     def __init__(self,
                  id_: int = None,

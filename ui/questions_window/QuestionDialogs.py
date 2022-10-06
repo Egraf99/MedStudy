@@ -45,6 +45,12 @@ class QuestionDialog(QDialog, Ui_Dialog):
             type_ = Question.TypeAnswer.SINGLE.value
         elif self.many_answer_radioButton.isChecked():
             type_ = Question.TypeAnswer.MANY.value
+        elif self.int_answer_radio_Button.isChecked():
+            type_ = Question.TypeAnswer.INTEGER.value
+        elif self.float_answer_radioButton.isChecked():
+            type_ = Question.TypeAnswer.FLOAT.value
+        elif self.text_answer_radioButton.isChecked():
+            type_ = Question.TypeAnswer.TEXT.value
 
         return type_
 
@@ -73,6 +79,15 @@ class QuestionDialog(QDialog, Ui_Dialog):
 
     def _set_question_many(self):
         self.many_answer_radioButton.setChecked(True)
+
+    def _set_question_integer(self):
+        self.int_answer_radio_Button.setChecked(True)
+
+    def _set_question_float(self):
+        self.float_answer_radioButton.setChecked(True)
+
+    def _set_question_text(self):
+        self.text_answer_radioButton.setChecked(True)
 
     def _set_question_name(self, name: str):
         self.question_lineEdit.setText(name)
@@ -123,12 +138,18 @@ class UpdateQuestionDialog(QuestionDialog):
     def set_values(self, question: Question):
         self._set_question_name(question.name)
         self._set_short_name(question.short)
-        if question.type_ == 0:
+        if question.type_ == Question.TypeAnswer.BOOL.value:
             self._set_question_bool()
-        elif question.type_ == 1:
+        elif question.type_ == Question.TypeAnswer.SINGLE.value:
             self._set_question_single()
-        elif question.type_ == 2:
+        elif question.type_ == Question.TypeAnswer.MANY.value:
             self._set_question_many()
+        elif question.type_ == Question.TypeAnswer.INTEGER.value:
+            self._set_question_integer()
+        elif question.type_ == Question.TypeAnswer.FLOAT.value:
+            self._set_question_float()
+        elif question.type_ == Question.TypeAnswer.TEXT.value:
+            self._set_question_text()
         self._set_measure(question.measure)
         self._set_private(question.private_bool)
         self._set_require(question.require_bool)

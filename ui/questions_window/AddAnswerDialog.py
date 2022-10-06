@@ -36,6 +36,12 @@ class AddAnswerDialog(Ui_AddAnswerDialog, QDialog):
             self.single_answer_radioButton.setChecked(True)
         elif t == Question.TypeAnswer.MANY.value:
             self.many_answer_radioButton.setChecked(True)
+        elif t == Question.TypeAnswer.INTEGER.value:
+            self.int_answer_radio_Button.setChecked(True)
+        elif t == Question.TypeAnswer.FLOAT.value:
+            self.float_answer_radioButton.setChecked(True)
+        elif t == Question.TypeAnswer.TEXT.value:
+            self.text_answer_radioButton.setChecked(True)
 
     def _update_measure(self, m: str):
         self.measure_lineEdit.setText(m)
@@ -68,6 +74,12 @@ class AddAnswerDialog(Ui_AddAnswerDialog, QDialog):
             type_ = Question.TypeAnswer.SINGLE.value
         elif self.many_answer_radioButton.isChecked():
             type_ = Question.TypeAnswer.MANY.value
+        elif self.int_answer_radio_Button.isChecked():
+            type_ = Question.TypeAnswer.INTEGER.value
+        elif self.float_answer_radioButton.isChecked():
+            type_ = Question.TypeAnswer.FLOAT.value
+        elif self.text_answer_radioButton.isChecked():
+            type_ = Question.TypeAnswer.TEXT.value
 
         return type_
 
