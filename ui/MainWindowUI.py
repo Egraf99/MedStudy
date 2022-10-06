@@ -61,14 +61,10 @@ class Ui_MainWindow(object):
         self.add_answer_button.setEnabled(False)
         self.add_answer_button.setObjectName("add_answer_button")
         self.verticalLayout.addWidget(self.add_answer_button)
-        self.set_additional_button = QtWidgets.QPushButton(self.centralwidget)
-        self.set_additional_button.setEnabled(False)
-        self.set_additional_button.setObjectName("set_additional_button")
-        self.verticalLayout.addWidget(self.set_additional_button)
-        self.set_circle_button = QtWidgets.QPushButton(self.centralwidget)
-        self.set_circle_button.setEnabled(False)
-        self.set_circle_button.setObjectName("set_circle_button")
-        self.verticalLayout.addWidget(self.set_circle_button)
+        self.set_branch_button = QtWidgets.QPushButton(self.centralwidget)
+        self.set_branch_button.setEnabled(False)
+        self.set_branch_button.setObjectName("set_branch_button")
+        self.verticalLayout.addWidget(self.set_branch_button)
         self.horizontalLayout.addLayout(self.verticalLayout)
         self.verticalLayout_2.addLayout(self.horizontalLayout)
         self.verticalLayout_3.addLayout(self.verticalLayout_2)
@@ -92,8 +88,7 @@ class Ui_MainWindow(object):
         item.setText(_translate("MainWindow", "Порядок"))
         self.change_question_button.setText(_translate("MainWindow", "Изменить"))
         self.add_answer_button.setText(_translate("MainWindow", "Добавить ответы"))
-        self.set_additional_button.setText(_translate("MainWindow", "Установить доп. вопросы"))
-        self.set_circle_button.setText(_translate("MainWindow", "Установить цикл"))
+        self.set_branch_button.setText(_translate("MainWindow", "Добавить ветвление"))
 
 
 class QuestionTable(QtWidgets.QTableWidget):

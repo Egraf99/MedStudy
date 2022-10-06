@@ -59,7 +59,7 @@ class MedDatabase:
         self.execute(PatientAnswer.CREATE_TABLE)
         self.execute(Question.CREATE_TABLE)
         self.execute(EnableAnswers.CREATE_TABLE)
-        self.execute(RepeatQuestions.CREATE_TABLE)
+        self.execute(BranchQuestions.CREATE_TABLE)
         self.execute(QuestionType.CREATE_TABLE)
 
         # добавляем ответы Да и Нет с нужными id, если их еще нет в БД
@@ -147,10 +147,6 @@ class MedDatabase:
     def update_jump(self, question_id: int, answer_id: int, destination_id: int):
         self.execute(EnableAnswers.UPDATE_JUMP, destination_id, question_id, answer_id)
 
-    def update_circle(self, question_id: int, start_id: int, finish_id: int):
-        self.execute(RepeatQuestions.DELETE_QUESTION, question_id)
-        self.execute(RepeatQuestions.INSERT_REPEAT, question_id, start_id, finish_id)
-
     def get_patients(self) -> list[Patient]:
         return _list_patients_from_response(self.execute(Patient.SELECT_ALL, need_answer=True))
 
@@ -161,7 +157,6 @@ class MedDatabase:
         answer_id = self._insert_entity_if_not_exist(Answer.GET_ID_BY_TEXT, answer, Answer.INSERT_INTO, answer)
         self.execute(EnableAnswers.INSERT_ANSWER, question_id, answer_id)
         return answer_id
-
 
     def delete_question_with_answer(self, question_id: int, answer_id: int):
         self.execute(EnableAnswers.DELETE_QUESTION_AND_ANSWER, question_id, answer_id)

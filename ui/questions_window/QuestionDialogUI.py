@@ -35,7 +35,7 @@ class Ui_Dialog(object):
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.label = QtWidgets.QLabel(self.question_groupBox)
-        self.label.setObjectName("label")
+        self.label.setObjectName("answer_label")
         self.horizontalLayout_2.addWidget(self.label)
         self.short_question_lineEdit = QtWidgets.QLineEdit(self.question_groupBox)
         self.short_question_lineEdit.setMaximumSize(QtCore.QSize(16777215, 16777215))

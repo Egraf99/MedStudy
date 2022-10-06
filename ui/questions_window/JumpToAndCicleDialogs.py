@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QDialog
 
 from MedRepo import MedRepo
-from database.entities.Entity import Question
+from database.entities.Entity import Question, Answer
 from ui.questions_window.JumpToDialogUI import Ui_JumpToDialog
 from ui.questions_window.SetCircleDialogUI import Ui_SetCircleDialog
 
@@ -50,9 +50,29 @@ class SetCircleDialog(Ui_SetCircleDialog, QDialog):
         self.med_repo = MedRepo()
         self.question = question
         self._set_question_name(question)
+        self._set_answers(question.type_, self.med_repo.get_enable_answers(question.id_))
+        self._set_cycle(question.type_)
         self._set_start_questions(self.med_repo.get_question_witch_more_than_order(question.order))
         self._set_finish_questions(self.med_repo.get_question_witch_more_than_order(question.order))
         self._connect_buttons()
+
+    def _set_answers(self, question_type: int, answers_list: list[Answer]):
+        # если вопрос числовой, то в блокируем поле ответов для выбора
+        if question_type in [Question.TypeAnswer.INTEGER.value,
+                             Question.TypeAnswer.FLOAT.value,
+                             Question.TypeAnswer.TEXT.value]:
+            self.answer_label.setText("При ответе пользователя")
+            self.answer_combo_box.setEnabled(False)
+
+        else:
+            for answer in answers_list:
+                self.answer_combo_box.addItem(answer.name, answer.id_)
+
+    def _set_cycle(self, question_type: int):
+        if question_type == Question.TypeAnswer.INTEGER.value:
+            self.cycle_check_box.setEnabled(True)
+        else:
+            self.cycle_check_box.setEnabled(False)
 
     def _connect_buttons(self):
         self.saveAndCancelButtonBox.accepted.connect(self._save_circle_in_db)

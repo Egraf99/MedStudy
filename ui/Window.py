@@ -23,8 +23,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.questions_table.cellPressed.connect(self._active_change_buttons)
         self.change_question_button.clicked.connect(self._change_question)
         self.add_answer_button.clicked.connect(self._add_answer_dialog_show)
-        self.set_additional_button.clicked.connect(self._jump_to_dialog_show)
-        self.set_circle_button.clicked.connect(self._set_circle_dialog_show)
+        self.set_branch_button.clicked.connect(self._set_circle_dialog_show)
 
     def _add_question_show(self):
         AddNewQuestionDialog(self.order, parent=self, after_update_func=self.update_table).exec()
@@ -44,12 +43,10 @@ class Window(QMainWindow, Ui_MainWindow):
     def _active_change_buttons(self):
         selected_question = self.questions_table.get_selected_question()
         self.change_question_button.setEnabled(True)
-        self.set_circle_button.setEnabled(True)
-        if selected_question.type_ != Question.TypeAnswer.BOOL.value:
-            self.set_additional_button.setEnabled(True)
+        self.set_branch_button.setEnabled(True)
+        if selected_question.type_ in [Question.TypeAnswer.SINGLE.value, Question.TypeAnswer.MANY.value]:
             self.add_answer_button.setEnabled(True)
         else:
-            self.set_additional_button.setEnabled(False)
             self.add_answer_button.setEnabled(False)
 
     def _change_question(self):

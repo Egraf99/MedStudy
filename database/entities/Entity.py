@@ -222,12 +222,18 @@ class EnableAnswers:
         """
 
 
-class RepeatQuestions:
+class BranchQuestions:
     CREATE_TABLE: str = """
-        CREATE TABLE IF NOT EXISTS RepeatQuestions (
-            question_id INTEGER NOT NULL UNIQUE,
+        CREATE TABLE IF NOT EXISTS BranchQuestions (
+            question_id INTEGER NOT NULL,
+            answer_id INTEGER,
             from_question INTEGER NOT NULL,
-            to_question INTEGER NOT NULL
+            to_question INTEGER NOT NULL,
+            cycle INTEGER DEFAULT 0 CHECK (cycle IN (0,1)),
+            FOREIGN KEY (question_id) REFERENCES Question(id),
+            FOREIGN KEY (from_question) REFERENCES Question(id),
+            FOREIGN KEY (to_question) REFERENCES Question(id),
+            FOREIGN KEY (answer_id) REFERENCES Answer(id)
         ) 
         """
 
