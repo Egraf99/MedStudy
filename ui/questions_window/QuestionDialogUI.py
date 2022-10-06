@@ -47,19 +47,28 @@ class Ui_Dialog(object):
         self.groupBox.setObjectName("answerGroupBox")
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.groupBox)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
-        self.horizontalLayout = QtWidgets.QHBoxLayout()
-        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.gridLayout_1 = QtWidgets.QGridLayout()
+        self.gridLayout_1.setObjectName("gridLayout_1")
         self.bool_answer_radioButton = QtWidgets.QRadioButton(self.groupBox)
         self.bool_answer_radioButton.setChecked(True)
         self.bool_answer_radioButton.setObjectName("bool_answer_radioButton")
-        self.horizontalLayout.addWidget(self.bool_answer_radioButton)
+        self.gridLayout_1.addWidget(self.bool_answer_radioButton, 0, 0, 1, 1)
+        self.count_answer_radio_Button = QtWidgets.QRadioButton(self.groupBox)
+        self.count_answer_radio_Button.setObjectName("count_answer_radio_Button")
+        self.gridLayout_1.addWidget(self.count_answer_radio_Button, 0, 1, 1, 1)
+        self.text_answer_radioButton = QtWidgets.QRadioButton(self.groupBox)
+        self.text_answer_radioButton.setObjectName("text_answer_radioButton")
+        self.gridLayout_1.addWidget(self.text_answer_radioButton, 0, 3, 1, 1)
         self.single_answer_radioButton = QtWidgets.QRadioButton(self.groupBox)
         self.single_answer_radioButton.setObjectName("single_answer_radioButton")
-        self.horizontalLayout.addWidget(self.single_answer_radioButton)
+        self.gridLayout_1.addWidget(self.single_answer_radioButton, 1, 1, 1, 1)
+        self.float_answer_radioButton = QtWidgets.QRadioButton(self.groupBox)
+        self.float_answer_radioButton.setObjectName("float_answer_radioButton")
+        self.gridLayout_1.addWidget(self.float_answer_radioButton, 0, 2, 1, 1)
         self.many_answer_radioButton = QtWidgets.QRadioButton(self.groupBox)
         self.many_answer_radioButton.setObjectName("many_answer_radioButton")
-        self.horizontalLayout.addWidget(self.many_answer_radioButton)
-        self.verticalLayout_3.addLayout(self.horizontalLayout)
+        self.gridLayout_1.addWidget(self.many_answer_radioButton, 1, 2, 1, 1)
+        self.verticalLayout_3.addLayout(self.gridLayout_1)
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
         self.label_2 = QtWidgets.QLabel(self.groupBox)
@@ -101,6 +110,10 @@ class Ui_Dialog(object):
         self.single_answer_radioButton.toggled['bool'].connect(self.measure_lineEdit.setEnabled) # type: ignore
         self.many_answer_radioButton.toggled['bool'].connect(self.measure_lineEdit.setEnabled) # type: ignore
         self.bool_answer_radioButton.toggled['bool'].connect(self.measure_lineEdit.clear) # type: ignore
+        self.count_answer_radio_Button.toggled['bool'].connect(self.measure_lineEdit.clear) # type: ignore
+        self.count_answer_radio_Button.toggled['bool'].connect(self.measure_lineEdit.setEnabled) # type: ignore
+        self.text_answer_radioButton.toggled['bool'].connect(self.measure_lineEdit.setEnabled) # type: ignore
+        self.float_answer_radioButton.toggled['bool'].connect(self.measure_lineEdit.setEnabled) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def set_delete_button(self):
@@ -114,8 +127,11 @@ class Ui_Dialog(object):
         self.label.setText(_translate("Dialog", "Коротко"))
         self.groupBox.setTitle(_translate("Dialog", "Ответ"))
         self.bool_answer_radioButton.setText(_translate("Dialog", "Да|Нет"))
+        self.count_answer_radio_Button.setText(_translate("Dialog", "Числовой ответ"))
+        self.text_answer_radioButton.setText(_translate("Dialog", "Текстовый ответ"))
         self.single_answer_radioButton.setText(_translate("Dialog", "Одиночный ответ"))
         self.many_answer_radioButton.setText(_translate("Dialog", "Множественный ответ"))
+        self.float_answer_radioButton.setText(_translate("Dialog", "Десятичный ответ"))
         self.label_2.setText(_translate("Dialog", "Ед. измер."))
         self.private_checkBox.setText(_translate("Dialog", "&Указание на личность пациента"))
         self.require_checkBox.setText(_translate("Dialog", "&Обязательный вопрос"))

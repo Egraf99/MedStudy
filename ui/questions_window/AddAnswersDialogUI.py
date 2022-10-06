@@ -14,26 +14,35 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_AddAnswerDialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(672, 712)
+        Dialog.resize(626, 696)
         self.verticalLayout = QtWidgets.QVBoxLayout(Dialog)
         self.verticalLayout.setObjectName("verticalLayout")
         self.answerGroupBox = QtWidgets.QGroupBox(Dialog)
         self.answerGroupBox.setObjectName("answerGroupBox")
         self.verticalLayout_4 = QtWidgets.QVBoxLayout(self.answerGroupBox)
         self.verticalLayout_4.setObjectName("verticalLayout_4")
-        self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.gridLayout = QtWidgets.QGridLayout()
+        self.gridLayout.setObjectName("gridLayout")
         self.bool_answer_radioButton = QtWidgets.QRadioButton(self.answerGroupBox)
         self.bool_answer_radioButton.setChecked(True)
         self.bool_answer_radioButton.setObjectName("bool_answer_radioButton")
-        self.horizontalLayout_2.addWidget(self.bool_answer_radioButton)
+        self.gridLayout.addWidget(self.bool_answer_radioButton, 0, 0, 1, 1)
+        self.count_answer_radio_Button = QtWidgets.QRadioButton(self.answerGroupBox)
+        self.count_answer_radio_Button.setObjectName("count_answer_radio_Button")
+        self.gridLayout.addWidget(self.count_answer_radio_Button, 0, 1, 1, 1)
+        self.text_answer_radioButton = QtWidgets.QRadioButton(self.answerGroupBox)
+        self.text_answer_radioButton.setObjectName("text_answer_radioButton")
+        self.gridLayout.addWidget(self.text_answer_radioButton, 0, 3, 1, 1)
         self.single_answer_radioButton = QtWidgets.QRadioButton(self.answerGroupBox)
         self.single_answer_radioButton.setObjectName("single_answer_radioButton")
-        self.horizontalLayout_2.addWidget(self.single_answer_radioButton)
+        self.gridLayout.addWidget(self.single_answer_radioButton, 1, 1, 1, 1)
+        self.float_answer_radioButton = QtWidgets.QRadioButton(self.answerGroupBox)
+        self.float_answer_radioButton.setObjectName("float_answer_radioButton")
+        self.gridLayout.addWidget(self.float_answer_radioButton, 0, 2, 1, 1)
         self.many_answer_radioButton = QtWidgets.QRadioButton(self.answerGroupBox)
         self.many_answer_radioButton.setObjectName("many_answer_radioButton")
-        self.horizontalLayout_2.addWidget(self.many_answer_radioButton)
-        self.verticalLayout_4.addLayout(self.horizontalLayout_2)
+        self.gridLayout.addWidget(self.many_answer_radioButton, 1, 2, 1, 1)
+        self.verticalLayout_4.addLayout(self.gridLayout)
         self.horizontalLayout_4 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
         self.label_3 = QtWidgets.QLabel(self.answerGroupBox)
@@ -83,19 +92,33 @@ class Ui_AddAnswerDialog(object):
         self.single_answer_radioButton.toggled['bool'].connect(self.add_answer_button.setEnabled) # type: ignore
         self.many_answer_radioButton.toggled['bool'].connect(self.add_answer_lineEdit.setEnabled) # type: ignore
         self.many_answer_radioButton.toggled['bool'].connect(self.add_answer_button.setEnabled) # type: ignore
+        self.count_answer_radio_Button.toggled['bool'].connect(self.measure_lineEdit.setEnabled) # type: ignore
+        self.count_answer_radio_Button.toggled['bool'].connect(self.add_answer_lineEdit.setDisabled) # type: ignore
+        self.count_answer_radio_Button.toggled['bool'].connect(self.add_answer_button.setDisabled) # type: ignore
+        self.count_answer_radio_Button.toggled['bool'].connect(self.delete_answer_button.setDisabled) # type: ignore
+        self.count_answer_radio_Button.toggled['bool'].connect(self.answers_list.setDisabled) # type: ignore
+        self.bool_answer_radioButton.toggled['bool'].connect(self.add_answer_lineEdit.setDisabled) # type: ignore
+        self.text_answer_radioButton.toggled['bool'].connect(self.measure_lineEdit.setEnabled) # type: ignore
+        self.text_answer_radioButton.toggled['bool'].connect(self.add_answer_lineEdit.setDisabled) # type: ignore
+        self.text_answer_radioButton.toggled['bool'].connect(self.add_answer_button.setDisabled) # type: ignore
+        self.text_answer_radioButton.toggled['bool'].connect(self.answers_list.setDisabled) # type: ignore
+        self.text_answer_radioButton.toggled['bool'].connect(self.delete_answer_button.setDisabled) # type: ignore
+        self.float_answer_radioButton.toggled['bool'].connect(self.measure_lineEdit.setEnabled) # type: ignore
+        self.float_answer_radioButton.toggled['bool'].connect(self.add_answer_lineEdit.setDisabled) # type: ignore
+        self.float_answer_radioButton.toggled['bool'].connect(self.answers_list.setDisabled) # type: ignore
+        self.float_answer_radioButton.toggled['bool'].connect(self.add_answer_button.setDisabled) # type: ignore
+        self.float_answer_radioButton.toggled['bool'].connect(self.delete_answer_button.setDisabled) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(Dialog)
-
-        Dialog.setTabOrder(self.answerGroupBox, self.measure_lineEdit)
-        Dialog.setTabOrder(self.measure_lineEdit, self.add_answer_lineEdit)
-        Dialog.setTabOrder(self.add_answer_lineEdit, self.add_answer_button)
-        Dialog.setTabOrder(self.add_answer_button, self.answers_list)
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Добавить ответы"))
         self.answerGroupBox.setTitle(_translate("Dialog", "Ответ"))
         self.bool_answer_radioButton.setText(_translate("Dialog", "Да|Нет"))
+        self.count_answer_radio_Button.setText(_translate("Dialog", "Числовой ответ"))
+        self.text_answer_radioButton.setText(_translate("Dialog", "Текстовый ответ"))
         self.single_answer_radioButton.setText(_translate("Dialog", "Одиночный ответ"))
+        self.float_answer_radioButton.setText(_translate("Dialog", "Десятичный ответ"))
         self.many_answer_radioButton.setText(_translate("Dialog", "Множественный ответ"))
         self.label_3.setText(_translate("Dialog", "Ед. измер."))
         self.add_answer_button.setText(_translate("Dialog", "Добавить"))

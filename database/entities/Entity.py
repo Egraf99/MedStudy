@@ -249,7 +249,8 @@ class QuestionType:
         INSERT INTO QuestionType (id, type) VALUES  
             (0, "bool"),
             (1, "single"),
-            (2, "many")
+            (2, "many"),
+            (3, "count")
         """
 
     GET_TYPES: str = """
