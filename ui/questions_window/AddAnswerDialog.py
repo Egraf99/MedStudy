@@ -35,7 +35,7 @@ class AddAnswerDialog(Ui_AddAnswerDialog, QDialog):
         elif t == Question.TypeAnswer.SINGLE.value:
             self.single_answer_radioButton.setChecked(True)
         elif t == Question.TypeAnswer.MANY.value:
-            self.single_answer_radioButton.setChecked(True)
+            self.many_answer_radioButton.setChecked(True)
 
     def _update_measure(self, m: str):
         self.measure_lineEdit.setText(m)
@@ -58,16 +58,16 @@ class AddAnswerDialog(Ui_AddAnswerDialog, QDialog):
         self.med_repo.update_question(self.question)
 
     def _take_measure(self) -> str:
-        return self.measure_lineEdit.text()
+        return self.measure_lineEdit.text().strip()
 
     def _take_question_type(self) -> int:
-        type_ = 0
+        type_ = Question.TypeAnswer.BOOL.value
         if self.bool_answer_radioButton.isChecked():
-            type_ = 0
+            type_ = Question.TypeAnswer.BOOL.value
         elif self.single_answer_radioButton.isChecked():
-            type_ = 1
+            type_ = Question.TypeAnswer.SINGLE.value
         elif self.many_answer_radioButton.isChecked():
-            type_ = 2
+            type_ = Question.TypeAnswer.MANY.value
 
         return type_
 

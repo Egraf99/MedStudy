@@ -29,22 +29,22 @@ class QuestionDialog(QDialog, Ui_Dialog):
         if self._after_update_func: self._after_update_func()
 
     def _take_question_name(self) -> str:
-        return self.question_lineEdit.text()
+        return self.question_lineEdit.text().strip()
 
     def _take_short_name(self) -> str:
-        return self.short_question_lineEdit.text()
+        return self.short_question_lineEdit.text().strip()
 
     def _take_measure(self) -> str:
-        return self.measure_lineEdit.text()
+        return self.measure_lineEdit.text().strip()
 
     def _take_question_type(self) -> int:
-        type_ = 0
+        type_ = Question.TypeAnswer.BOOL.value
         if self.bool_answer_radioButton.isChecked():
-            type_ = 0
+            type_ = Question.TypeAnswer.BOOL.value
         elif self.single_answer_radioButton.isChecked():
-            type_ = 1
+            type_ = Question.TypeAnswer.SINGLE.value
         elif self.many_answer_radioButton.isChecked():
-            type_ = 2
+            type_ = Question.TypeAnswer.MANY.value
 
         return type_
 

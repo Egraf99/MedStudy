@@ -102,9 +102,6 @@ class Ui_Dialog(object):
         self.many_answer_radioButton.toggled['bool'].connect(self.measure_lineEdit.setEnabled) # type: ignore
         self.bool_answer_radioButton.toggled['bool'].connect(self.measure_lineEdit.clear) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(Dialog)
-        Dialog.setTabOrder(self.question_lineEdit, self.short_question_lineEdit)
-        Dialog.setTabOrder(self.short_question_lineEdit, self.private_checkBox)
-        Dialog.setTabOrder(self.private_checkBox, self.require_checkBox)
 
     def set_delete_button(self):
         self.delete_button.setVisible(True)

@@ -157,9 +157,11 @@ class MedDatabase:
     def delete_patient(self, patient_id: int):
         self.execute(Patient.DELETE, patient_id)
 
-    def add_answer_to_question(self, answer: str, question_id: int):
+    def add_answer_to_question(self, answer: str, question_id: int) -> int:
         answer_id = self._insert_entity_if_not_exist(Answer.GET_ID_BY_TEXT, answer, Answer.INSERT_INTO, answer)
         self.execute(EnableAnswers.INSERT_ANSWER, question_id, answer_id)
+        return answer_id
+
 
     def delete_question_with_answer(self, question_id: int, answer_id: int):
         self.execute(EnableAnswers.DELETE_QUESTION_AND_ANSWER, question_id, answer_id)
