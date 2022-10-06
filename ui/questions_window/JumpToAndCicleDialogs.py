@@ -78,9 +78,14 @@ class SetCircleDialog(Ui_SetCircleDialog, QDialog):
         self.saveAndCancelButtonBox.accepted.connect(self._save_circle_in_db)
 
     def _save_circle_in_db(self):
+        answer_id = self._take_answer_id()
         start_id = self._take_start_question_id()
         finish_id = self._take_finish_question_id()
-        self.med_repo.update_circle(self.question.id_, start_id, finish_id)
+        cycle = int(self.cycle_check_box.isChecked())
+        self.med_repo.update_cycle(self.question.id_, answer_id, start_id, finish_id, cycle)
+
+    def _take_answer_id(self) -> int:
+        return self.answer_combo_box.currentData()
 
     def _take_start_question_id(self) -> int:
         return self.start_comboBox.currentData()

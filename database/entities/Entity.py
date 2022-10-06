@@ -238,12 +238,16 @@ class BranchQuestions:
         """
 
     DELETE_QUESTION: str = """
-        DELETE FROM RepeatQuestions WHERE question_id = ?
+        DELETE FROM BranchQuestions WHERE question_id = ?
         """
 
-    INSERT_REPEAT: str = """
-        INSERT INTO RepeatQuestions (question_id, from_question, to_question)
-        VALUES (?,?,?)
+    INSERT_BRANCH: str = """
+        INSERT INTO BranchQuestions (question_id, answer_id, from_question, to_question, cycle)
+        VALUES (?,?,?,?,?)
+        """
+
+    DELETE_ANSWERS_FROM_QUESTION: str = """
+        DELETE FROM BranchQuestions WHERE question_id = ?
         """
 
 

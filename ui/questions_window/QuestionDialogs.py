@@ -120,7 +120,7 @@ class UpdateQuestionDialog(QuestionDialog):
         self.old_question = question
         self.set_values(question)
 
-    def connection_signal_slot(self):
+    def _connection_signal_slot(self):
         super()._connection_signal_slot()
         self.delete_button.clicked.connect(self._delete_button_clicked)
 

@@ -139,6 +139,7 @@ class MedDatabase:
         self.execute(Question.DELETE_BY_ID, question_id)
         self.execute(Question.UPDATE_ORDER, order)
         self.execute(EnableAnswers.DELETE_ANSWERS_FROM_QUESTION, question_id)
+        self.execute(BranchQuestions.DELETE_ANSWERS_FROM_QUESTION, question_id)
 
     def get_question_witch_more_than_order(self, order: int) -> list[Question]:
         questions_list = self.execute(Question.SELECT_ALL_FROM_ORDER, order, need_answer=True)
@@ -160,6 +161,10 @@ class MedDatabase:
 
     def delete_question_with_answer(self, question_id: int, answer_id: int):
         self.execute(EnableAnswers.DELETE_QUESTION_AND_ANSWER, question_id, answer_id)
+
+    def update_cycle(self, question_id: int, answer_id: int, from_: int, to: int, cycle: int):
+        self.execute(BranchQuestions.DELETE_QUESTION, question_id)
+        self.execute(BranchQuestions.INSERT_BRANCH, question_id, answer_id, from_, to, cycle)
 
 
 if __name__ == "__main__":
