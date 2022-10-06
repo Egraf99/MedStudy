@@ -38,7 +38,7 @@ class Window(QMainWindow, Ui_MainWindow):
     def _active_change_buttons(self):
         selected_question = self.questions_table.get_selected_question()
         self.change_question_button.setEnabled(True)
-        if selected_question.type_ == 1:
+        if selected_question.type_ != Question.TypeAnswer.BOOL:
             self.set_additional_button.setEnabled(False)
         else:
             self.set_additional_button.setEnabled(True)

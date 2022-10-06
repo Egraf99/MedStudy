@@ -20,12 +20,13 @@ class QuestionDialog(QDialog, Ui_Dialog):
         self.question_groupBox.setTitle(f"Вопрос {number}")
 
     def connection_signal_slot(self):
-        self.add_answer_button.clicked.connect(self.add_new_answer)
+        self.add_answer_button.clicked.connect(lambda: self.add_new_answer(self.add_answer_lineEdit.text()))
         self.delete_answer_button.clicked.connect(self.delete_answer_from_list)
         self.saveAndCloseButtonsBox.accepted.connect(self.save_question)
 
-    def add_new_answer(self):
-        self.answers_list.addItem(self.add_answer_lineEdit.text())
+    def add_new_answer(self, answer: str):
+        if answer == "": return
+        self.answers_list.addItem(answer)
         self.add_answer_lineEdit.clear()
 
     def save_question(self):

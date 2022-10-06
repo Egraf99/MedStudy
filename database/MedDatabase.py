@@ -93,11 +93,11 @@ class MedDatabase:
                                                        Question.INSERT,
                                                        question.name, question.short, question.type_, question.measure,
                                                        question.require_int, question.private_int, question.order)
-        if question.type_ == 0:
+        if question.type_ == Question.TypeAnswer.BOOL:
             self.execute(EnableAnswers.INSERT_NO_ANSWER, question_id)
             self.execute(EnableAnswers.INSERT_YES_ANSWER, question_id)
         else:
-            if question.type_ == 2 and question.list_answers:
+            if question.type_ == Question.TypeAnswer.MANY and question.list_answers:
                 for answer in question.list_answers:
                     answer_id = self._insert_entity_if_not_exist(Answer.GET_ID_BY_TEXT, answer, Answer.INSERT_INTO,
                                                                  answer)

@@ -122,6 +122,10 @@ class Ui_Dialog(object):
         self.bool_answer_radioButton.toggled['bool'].connect(self.measure_lineEdit.clear) # type: ignore
         self.many_answer_radioButton.toggled['bool'].connect(self.add_answer_lineEdit.setEnabled) # type: ignore
         self.many_answer_radioButton.toggled['bool'].connect(self.add_answer_button.setEnabled) # type: ignore
+        self.single_answer_radioButton.toggled['bool'].connect(self.add_answer_lineEdit.setEnabled) # type: ignore
+        self.single_answer_radioButton.toggled['bool'].connect(self.add_answer_button.setEnabled) # type: ignore
+        self.single_answer_radioButton.toggled['bool'].connect(self.delete_answer_button.setEnabled) # type: ignore
+        self.single_answer_radioButton.toggled['bool'].connect(self.answers_list.setEnabled) # type: ignore
         self.many_answer_radioButton.toggled['bool'].connect(self.answers_list.setEnabled) # type: ignore
         self.many_answer_radioButton.toggled['bool'].connect(self.delete_answer_button.setEnabled) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(Dialog)

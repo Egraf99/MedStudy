@@ -1,3 +1,6 @@
+from enum import Enum
+
+
 class Patient:
     def __init__(self, id_: int, name: str, male: int, age: int):
         self.id = id_
@@ -126,6 +129,11 @@ class Question:
     GET_ID_BY_NAME: str = """
         SELECT id FROM Question WHERE name = ?
         """
+
+    class TypeAnswer(Enum):
+        BOOL = 0
+        SINGLE = 1
+        MANY = 2
 
     def __init__(self,
                  id_: int = None,
