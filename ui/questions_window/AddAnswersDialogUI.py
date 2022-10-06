@@ -85,6 +85,11 @@ class Ui_AddAnswerDialog(object):
         self.many_answer_radioButton.toggled['bool'].connect(self.add_answer_button.setEnabled) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
+        Dialog.setTabOrder(self.answerGroupBox, self.measure_lineEdit)
+        Dialog.setTabOrder(self.measure_lineEdit, self.add_answer_lineEdit)
+        Dialog.setTabOrder(self.add_answer_lineEdit, self.add_answer_button)
+        Dialog.setTabOrder(self.add_answer_button, self.answers_list)
+
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Добавить ответы"))

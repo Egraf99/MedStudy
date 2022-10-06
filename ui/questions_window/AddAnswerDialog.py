@@ -1,4 +1,4 @@
-from PyQt5 import QtCore
+from PyQt5 import QtCore, QtGui, Qt
 from PyQt5.QtWidgets import QDialog, QListWidgetItem
 
 from MedRepo import MedRepo
@@ -14,6 +14,11 @@ class AddAnswerDialog(Ui_AddAnswerDialog, QDialog):
         self.question = question
         self._update_question(question)
         self._connection_signal_slot()
+
+    def keyPressEvent(self, event: QtGui.QKeyEvent) -> None:
+        if event.type() == 6:
+            return
+        super(AddAnswerDialog, self).keyPressEvent(event)
 
     def _update_question(self, question: Question):
         self._update_name(question.name)
