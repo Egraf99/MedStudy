@@ -20,26 +20,13 @@ class QuestionDialog(QDialog, Ui_Dialog):
         self.question_groupBox.setTitle(f"Вопрос {number}")
 
     def _connection_signal_slot(self):
-        self.add_answer_button.clicked.connect(lambda: self.add_new_answer(self.add_answer_lineEdit.text()))
-        self.delete_answer_button.clicked.connect(self.delete_answer_from_list)
         self.saveAndCloseButtonsBox.accepted.connect(self.save_question)
-
-    def add_new_answer(self, answer: str):
-        if answer == "": return
-        self.answers_list.addItem(answer)
-        self.add_answer_lineEdit.clear()
 
     def save_question(self):
         pass
 
     def after_update_func(self):
         if self._after_update_func: self._after_update_func()
-
-    def delete_answer_from_list(self):
-        listItems = self.answers_list.selectedItems()
-        if not listItems: return
-        for item in listItems:
-            self.answers_list.takeItem(self.answers_list.row(item))
 
     def _take_question_name(self) -> str:
         return self.question_lineEdit.text()
@@ -72,17 +59,11 @@ class QuestionDialog(QDialog, Ui_Dialog):
             order=self.number
         )
 
-
     def _take_require(self) -> bool:
         return self.require_checkBox.isChecked()
 
     def _take_private(self) -> bool:
         return self.private_checkBox.isChecked()
-
-    def _take_all_answers(self) -> list[str]:
-        qlist = self.answers_list
-        answers = [qlist.item(x).text() for x in range(qlist.count())]
-        return answers
 
     def _set_question_bool(self):
         self.bool_answer_radioButton.setChecked(True)
@@ -103,10 +84,6 @@ class QuestionDialog(QDialog, Ui_Dialog):
         if self._take_question_type() != 0:
             self.measure_lineEdit.setText(measure)
 
-    def _set_enable_answers(self, answers: list[Answer]):
-        for answer in answers:
-            self.answers_list.addItem(answer.name)
-
     def _set_require(self, require: bool):
         self.require_checkBox.setChecked(require)
 
@@ -117,10 +94,6 @@ class QuestionDialog(QDialog, Ui_Dialog):
 class AddNewQuestionDialog(QuestionDialog):
     def save_question(self):
         question = self._create_question()
-
-        if question.type_ != Question.TypeAnswer.BOOL.value:
-            question.set_enable_answers(self._take_all_answers())
-
         self.med_repo.insert_question(question)
         self.after_update_func()
 
@@ -144,10 +117,6 @@ class UpdateQuestionDialog(QuestionDialog):
     def save_question(self):
         question = self._create_question()
         question.id_ = self.med_repo.get_question_id_by_name(self.old_question.name)
-
-        if question.type_ != Question.TypeAnswer.BOOL.value:
-            question.set_enable_answers(self._take_all_answers())
-
         self.med_repo.update_question(question)
         self.after_update_func()
 
@@ -160,7 +129,6 @@ class UpdateQuestionDialog(QuestionDialog):
             self._set_question_single()
         elif question.type_ == 2:
             self._set_question_many()
-            self._set_enable_answers(self.med_repo.get_enable_answers(question.id_))
         self._set_measure(question.measure)
         self._set_private(question.private_bool)
         self._set_require(question.require_bool)

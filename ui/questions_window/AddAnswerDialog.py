@@ -43,7 +43,26 @@ class AddAnswerDialog(Ui_AddAnswerDialog, QDialog):
     def _connection_signal_slot(self):
         self.add_answer_button.clicked.connect(lambda: self.add_new_answer(self.add_answer_lineEdit.text()))
         self.delete_answer_button.clicked.connect(self.delete_answer_from_list)
+        self.buttonBox.accepted.connect(self._save_type_and_measure_question)
 
+    def _save_type_and_measure_question(self):
+        self.question.type_ = self._take_question_type()
+        self.question.measure = self._take_measure()
+        self.med_repo.update_question(self.question)
+
+    def _take_measure(self) -> str:
+        return self.measure_lineEdit.text()
+
+    def _take_question_type(self) -> int:
+        type_ = 0
+        if self.bool_answer_radioButton.isChecked():
+            type_ = 0
+        elif self.single_answer_radioButton.isChecked():
+            type_ = 1
+        elif self.many_answer_radioButton.isChecked():
+            type_ = 2
+
+        return type_
     def add_new_answer(self, answer: str):
         if answer == "": return
         answer_id = self.med_repo.add_answer_to_question(answer, self.question.id_)
