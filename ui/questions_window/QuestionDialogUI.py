@@ -44,7 +44,7 @@ class Ui_Dialog(object):
         self.verticalLayout_2.addLayout(self.horizontalLayout_2)
         self.verticalLayout_5.addWidget(self.question_groupBox)
         self.groupBox = QtWidgets.QGroupBox(self.frame)
-        self.groupBox.setObjectName("groupBox")
+        self.groupBox.setObjectName("answerGroupBox")
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.groupBox)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
         self.horizontalLayout = QtWidgets.QHBoxLayout()

@@ -57,6 +57,10 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.change_question_button)
         spacerItem = QtWidgets.QSpacerItem(20, 178, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem)
+        self.add_answer_button = QtWidgets.QPushButton(self.centralwidget)
+        self.add_answer_button.setEnabled(False)
+        self.add_answer_button.setObjectName("add_answer_button")
+        self.verticalLayout.addWidget(self.add_answer_button)
         self.set_additional_button = QtWidgets.QPushButton(self.centralwidget)
         self.set_additional_button.setEnabled(False)
         self.set_additional_button.setObjectName("set_additional_button")
@@ -87,7 +91,8 @@ class Ui_MainWindow(object):
         item = self.questions_table.horizontalHeaderItem(2)
         item.setText(_translate("MainWindow", "Порядок"))
         self.change_question_button.setText(_translate("MainWindow", "Изменить"))
-        self.set_additional_button.setText(_translate("MainWindow", "Установить прыжок"))
+        self.add_answer_button.setText(_translate("MainWindow", "Добавить ответы"))
+        self.set_additional_button.setText(_translate("MainWindow", "Установить доп. вопросы"))
         self.set_circle_button.setText(_translate("MainWindow", "Установить цикл"))
 
 

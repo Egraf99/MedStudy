@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QMainWindow
 from MedRepo import MedRepo
 from database.entities.Entity import Question
 from ui.MainWindowUI import Ui_MainWindow
+from ui.questions_window.AddAnswerDialog import AddAnswerDialog
 from ui.questions_window.JumpToAndCicleDialogs import JumpToDialog, SetCircleDialog
 from ui.questions_window.QuestionDialogs import AddNewQuestionDialog, UpdateQuestionDialog
 
@@ -21,6 +22,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.new_question_button.clicked.connect(self._add_question_show)
         self.questions_table.cellPressed.connect(self._active_change_buttons)
         self.change_question_button.clicked.connect(self._change_question)
+        self.add_answer_button.clicked.connect(self._add_answer_dialog_show)
         self.set_additional_button.clicked.connect(self._jump_to_dialog_show)
         self.set_circle_button.clicked.connect(self._set_circle_dialog_show)
 
@@ -31,6 +33,10 @@ class Window(QMainWindow, Ui_MainWindow):
         question = self.questions_table.get_selected_question()
         JumpToDialog(question, parent=self).exec()
 
+    def _add_answer_dialog_show(self):
+        question = self.questions_table.get_selected_question()
+        AddAnswerDialog(question, parent=self).exec()
+
     def _set_circle_dialog_show(self):
         question = self.questions_table.get_selected_question()
         SetCircleDialog(question, parent=self).exec()
@@ -38,11 +44,13 @@ class Window(QMainWindow, Ui_MainWindow):
     def _active_change_buttons(self):
         selected_question = self.questions_table.get_selected_question()
         self.change_question_button.setEnabled(True)
-        if selected_question.type_ != Question.TypeAnswer.BOOL:
-            self.set_additional_button.setEnabled(False)
-        else:
-            self.set_additional_button.setEnabled(True)
         self.set_circle_button.setEnabled(True)
+        if selected_question.type_ != Question.TypeAnswer.BOOL.value:
+            self.set_additional_button.setEnabled(True)
+            self.add_answer_button.setEnabled(True)
+        else:
+            self.set_additional_button.setEnabled(False)
+            self.add_answer_button.setEnabled(False)
 
     def _change_question(self):
         UpdateQuestionDialog(self.questions_table.get_selected_question(), parent=self,

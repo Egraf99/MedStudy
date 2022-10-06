@@ -14,12 +14,12 @@ class QuestionDialog(QDialog, Ui_Dialog):
         if after_update_func:
             self._after_update_func = after_update_func
         self.med_repo = MedRepo()
-        self.connection_signal_slot()
+        self._connection_signal_slot()
 
     def update_number(self, number: int):
         self.question_groupBox.setTitle(f"Вопрос {number}")
 
-    def connection_signal_slot(self):
+    def _connection_signal_slot(self):
         self.add_answer_button.clicked.connect(lambda: self.add_new_answer(self.add_answer_lineEdit.text()))
         self.delete_answer_button.clicked.connect(self.delete_answer_from_list)
         self.saveAndCloseButtonsBox.accepted.connect(self.save_question)
@@ -60,6 +60,18 @@ class QuestionDialog(QDialog, Ui_Dialog):
             type_ = 2
 
         return type_
+
+    def _create_question(self) -> Question:
+        return Question(
+            name=self._take_question_name(),
+            short=self._take_short_name(),
+            type_=self._take_question_type(),
+            measure=self._take_measure(),
+            require=self._take_require(),
+            private=self._take_private(),
+            order=self.number
+        )
+
 
     def _take_require(self) -> bool:
         return self.require_checkBox.isChecked()
@@ -104,18 +116,9 @@ class QuestionDialog(QDialog, Ui_Dialog):
 
 class AddNewQuestionDialog(QuestionDialog):
     def save_question(self):
-        type_ = self._take_question_type()
-        question = Question(
-            name=self._take_question_name(),
-            short=self._take_short_name(),
-            type_=type_,
-            measure=self._take_measure(),
-            require=self._take_require(),
-            private=self._take_private(),
-            order=self.number
-        )
+        question = self._create_question()
 
-        if type_ == 2:
+        if question.type_ != Question.TypeAnswer.BOOL.value:
             question.set_enable_answers(self._take_all_answers())
 
         self.med_repo.insert_question(question)
@@ -130,7 +133,7 @@ class UpdateQuestionDialog(QuestionDialog):
         self.set_values(question)
 
     def connection_signal_slot(self):
-        super().connection_signal_slot()
+        super()._connection_signal_slot()
         self.delete_button.clicked.connect(self._delete_button_clicked)
 
     def _delete_button_clicked(self):
@@ -139,19 +142,10 @@ class UpdateQuestionDialog(QuestionDialog):
         self.reject()
 
     def save_question(self):
-        type_ = self._take_question_type()
-        question = Question(
-            name=self._take_question_name(),
-            short=self._take_short_name(),
-            type_=type_,
-            measure=self._take_measure(),
-            require=self._take_require(),
-            private=self._take_private(),
-            order=self.number
-        )
+        question = self._create_question()
         question.id_ = self.med_repo.get_question_id_by_name(self.old_question.name)
 
-        if type_ == 2:
+        if question.type_ != Question.TypeAnswer.BOOL.value:
             question.set_enable_answers(self._take_all_answers())
 
         self.med_repo.update_question(question)

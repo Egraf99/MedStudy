@@ -93,11 +93,11 @@ class MedDatabase:
                                                        Question.INSERT,
                                                        question.name, question.short, question.type_, question.measure,
                                                        question.require_int, question.private_int, question.order)
-        if question.type_ == Question.TypeAnswer.BOOL:
+        if question.type_ == Question.TypeAnswer.BOOL.value:
             self.execute(EnableAnswers.INSERT_NO_ANSWER, question_id)
             self.execute(EnableAnswers.INSERT_YES_ANSWER, question_id)
         else:
-            if question.type_ == Question.TypeAnswer.MANY and question.list_answers:
+            if question.type_ == Question.TypeAnswer.MANY.value and question.list_answers:
                 for answer in question.list_answers:
                     answer_id = self._insert_entity_if_not_exist(Answer.GET_ID_BY_TEXT, answer, Answer.INSERT_INTO,
                                                                  answer)
@@ -157,6 +157,9 @@ class MedDatabase:
     def delete_patient(self, patient_id: int):
         self.execute(Patient.DELETE, patient_id)
 
+    def add_answer_to_question(self, answer: str, question_id: int):
+        answer_id = self._insert_entity_if_not_exist(Answer.GET_ID_BY_TEXT, answer, Answer.INSERT_INTO, answer)
+        self.execute(EnableAnswers.INSERT_ANSWER, question_id, answer_id)
 
 if __name__ == "__main__":
     MedDatabase().add_patient("Ваня", 22, 0)

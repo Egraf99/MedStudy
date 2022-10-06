@@ -55,3 +55,6 @@ class MedRepo(Singleton):
 
     def delete_patient(self, patient_id):
         self.db.delete_patient(patient_id)
+
+    def add_answer_to_question(self, answer: str, question_id: int):
+        self.db.add_answer_to_question(answer, question_id)
