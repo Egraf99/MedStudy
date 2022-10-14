@@ -2,10 +2,10 @@ from PyQt5.QtWidgets import QMainWindow
 
 from MedRepo import MedRepo
 from database.entities.Entity import Question
-from ui.MainWindowUI import Ui_MainWindow
-from ui.questions_window.AddAnswerDialog import AddAnswerDialog
-from ui.questions_window.JumpToAndCicleDialogs import JumpToDialog, SetCircleDialog
-from ui.questions_window.QuestionDialogs import AddNewQuestionDialog, UpdateQuestionDialog
+from ui.admin.MainWindowUI import Ui_MainWindow
+from ui.admin.questions_window.AddAnswerDialog import AddAnswerDialog
+from ui.admin.questions_window.JumpToAndCicleDialogs import JumpToDialog, SetCircleDialog
+from ui.admin.questions_window.QuestionDialogs import AddNewQuestionDialog, UpdateQuestionDialog
 
 
 class Window(QMainWindow, Ui_MainWindow):

@@ -2,8 +2,8 @@ from PyQt5.QtWidgets import QDialog
 
 from MedRepo import MedRepo
 from database.entities.Entity import Question, Answer
-from ui.questions_window.JumpToDialogUI import Ui_JumpToDialog
-from ui.questions_window.SetCircleDialogUI import Ui_SetCircleDialog
+from ui.admin.questions_window.JumpToDialogUI import Ui_JumpToDialog
+from ui.admin.questions_window.SetCircleDialogUI import Ui_SetCircleDialog
 
 
 class JumpToDialog(Ui_JumpToDialog, QDialog):

@@ -1,9 +1,9 @@
-from PyQt5 import QtGui, QtCore
+from PyQt5 import QtCore
 from PyQt5.QtWidgets import QMainWindow, QListWidgetItem
 
 from MedRepo import MedRepo
 from database.entities.Entity import Patient
-from ui.ClientWindowUI import Ui_ClientWindow
+from ui.client.ClientWindowUI import Ui_ClientWindow
 
 
 def get_year_str(year: int) -> str:

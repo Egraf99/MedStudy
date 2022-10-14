@@ -1,10 +1,9 @@
 import sys
 import traceback
 
-from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QApplication
 
-from ui.Window import Window
+from ui.admin.Window import Window
 
 
 def main():

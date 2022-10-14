@@ -1,9 +1,9 @@
-from PyQt5 import QtCore, QtGui, Qt
+from PyQt5 import QtCore, QtGui
 from PyQt5.QtWidgets import QDialog, QListWidgetItem
 
 from MedRepo import MedRepo
 from database.entities.Entity import Question, Answer
-from ui.questions_window.AddAnswersDialogUI import Ui_AddAnswerDialog
+from ui.admin.questions_window.AddAnswersDialogUI import Ui_AddAnswerDialog
 
 
 class AddAnswerDialog(Ui_AddAnswerDialog, QDialog):

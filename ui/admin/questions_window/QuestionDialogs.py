@@ -1,8 +1,8 @@
 from PyQt5.QtWidgets import QDialog
 
 from MedRepo import MedRepo
-from database.entities.Entity import Question, Answer
-from ui.questions_window.QuestionDialogUI import Ui_Dialog
+from database.entities.Entity import Question
+from ui.admin.questions_window.QuestionDialogUI import Ui_Dialog
 
 
 class QuestionDialog(QDialog, Ui_Dialog):
