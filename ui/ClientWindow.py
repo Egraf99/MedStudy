@@ -6,6 +6,15 @@ from database.entities.Entity import Patient
 from ui.ClientWindowUI import Ui_ClientWindow
 
 
+def get_year_str(year: int) -> str:
+    if year % 10 == 1:
+        return f"{year} год"
+    elif year % 10 in [2, 3, 4]:
+        return f"{year} года"
+    else:
+        return f"{year} лет"
+
+
 class ClientWindow(QMainWindow, Ui_ClientWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -30,6 +39,8 @@ class ClientWindow(QMainWindow, Ui_ClientWindow):
         self.patients_list.clear()
         self.patients = patients_list
         for patient in patients_list:
-            item = QListWidgetItem(f"{patient.name}         {patient.age}          {'м' if patient.male else 'ж'}")
+            item = QListWidgetItem(
+                f"{patient.name}         {get_year_str(patient.age)}          {'муж.' if patient.male else 'жен.'}"
+            )
             item.setData(QtCore.Qt.UserRole, patient.id)
             self.patients_list.addItem(item)
