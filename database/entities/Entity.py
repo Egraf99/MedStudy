@@ -237,8 +237,8 @@ class BranchQuestions:
         ) 
         """
 
-    DELETE_QUESTION: str = """
-        DELETE FROM BranchQuestions WHERE question_id = ?
+    DELETE_QUESTION_WITH_ANSWER: str = """
+        DELETE FROM BranchQuestions WHERE question_id = ? AND answer_id = ?
         """
 
     INSERT_BRANCH: str = """

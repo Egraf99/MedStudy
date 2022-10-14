@@ -163,7 +163,7 @@ class MedDatabase:
         self.execute(EnableAnswers.DELETE_QUESTION_AND_ANSWER, question_id, answer_id)
 
     def update_cycle(self, question_id: int, answer_id: int, from_: int, to: int, cycle: int):
-        self.execute(BranchQuestions.DELETE_QUESTION, question_id)
+        self.execute(BranchQuestions.DELETE_QUESTION_WITH_ANSWER, question_id, answer_id)
         self.execute(BranchQuestions.INSERT_BRANCH, question_id, answer_id, from_, to, cycle)
 
 
