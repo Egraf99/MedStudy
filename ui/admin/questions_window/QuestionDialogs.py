@@ -6,27 +6,17 @@ from ui.admin.questions_window.QuestionDialogUI import Ui_Dialog
 
 
 class QuestionDialog(QDialog, Ui_Dialog):
-    def __init__(self, number: int, after_update_func=None, parent=None):
+    def __init__(self, parent=None):
         super().__init__(parent)
         self.setupUi(self)
-        self.number = number
-        self.update_number(self.number)
-        if after_update_func:
-            self._after_update_func = after_update_func
         self.med_repo = MedRepo()
         self._connection_signal_slot()
-
-    def update_number(self, number: int):
-        self.question_groupBox.setTitle(f"Вопрос {number}")
 
     def _connection_signal_slot(self):
         self.saveAndCloseButtonsBox.accepted.connect(self.save_question)
 
     def save_question(self):
         pass
-
-    def after_update_func(self):
-        if self._after_update_func: self._after_update_func()
 
     def _take_question_name(self) -> str:
         return self.question_lineEdit.text().strip()
@@ -62,7 +52,6 @@ class QuestionDialog(QDialog, Ui_Dialog):
             measure=self._take_measure(),
             require=self._take_require(),
             private=self._take_private(),
-            order=self.number
         )
 
     def _take_require(self) -> bool:
@@ -107,18 +96,28 @@ class QuestionDialog(QDialog, Ui_Dialog):
 
 
 class AddNewQuestionDialog(QuestionDialog):
+    def __init__(self, after_save_func=None, parent=None):
+        super().__init__(parent)
+        self.after_save_func = after_save_func
+
     def save_question(self):
         question = self._create_question()
         self.med_repo.insert_question(question)
-        self.after_update_func()
+        self.after_save_func(self.med_repo.get_question_id_by_name(question.name))
+        self.question_groupBox.setTitle(f"Новый вопрос")
 
 
 class UpdateQuestionDialog(QuestionDialog):
-    def __init__(self, question: Question, after_save_func=None, parent=None):
-        super().__init__(question.order, after_save_func, parent)
+    def __init__(self, question_id: int, after_update_func=None, parent=None):
+        super().__init__(parent)
+        self.after_update_func = after_update_func
         self.set_delete_button()
-        self.old_question = question
-        self.set_values(question)
+        self.old_question = self.med_repo.get_question_by_id(question_id)
+        self.set_values(self.old_question)
+        self.update_question_name(self.old_question.name)
+
+    def update_question_name(self, name: str):
+        self.question_groupBox.setTitle(f"Вопрос: {name}")
 
     def _connection_signal_slot(self):
         super()._connection_signal_slot()

@@ -12,7 +12,6 @@ def _list_question_from_response(questions_list_response: list) -> list[Question
                                               require=question[4],
                                               measure=question[5],
                                               private=question[6],
-                                              order=question[7],
                                               ),
                     questions_list_response))
 
@@ -92,7 +91,7 @@ class MedDatabase:
         question_id = self._insert_entity_if_not_exist(Question.GET_ID_BY_NAME, question.name,
                                                        Question.INSERT,
                                                        question.name, question.short, question.type_, question.measure,
-                                                       question.require_int, question.private_int, question.order)
+                                                       question.require_int, question.private_int)
         if question.type_ == Question.TypeAnswer.BOOL.value:
             self.execute(EnableAnswers.INSERT_NO_ANSWER, question_id)
             self.execute(EnableAnswers.INSERT_YES_ANSWER, question_id)
@@ -102,6 +101,9 @@ class MedDatabase:
                     answer_id = self._insert_entity_if_not_exist(Answer.GET_ID_BY_TEXT, answer, Answer.INSERT_INTO,
                                                                  answer)
                     self.execute(EnableAnswers.INSERT_ANSWER, question_id, answer_id)
+
+    def get_question_by_id(self, id_: int) -> Question:
+        return _list_question_from_response(self.execute(Question.GET, id_, need_answer=True))[0]
 
     def get_question_id_by_name(self, name: str) -> Optional[int]:
         id_ = self._get_id(Question.GET_ID_BY_NAME, name)
@@ -165,6 +167,9 @@ class MedDatabase:
     def update_cycle(self, question_id: int, answer_id: int, from_: int, to: int, cycle: int):
         self.execute(BranchQuestions.DELETE_QUESTION_WITH_ANSWER, question_id, answer_id)
         self.execute(BranchQuestions.INSERT_BRANCH, question_id, answer_id, from_, to, cycle)
+
+    def update_next_question(self, old_question_id: int, new_question_id: int):
+        self.execute(Question.UPDATE_NEXT_QUESTION, new_question_id, old_question_id)
 
 
 if __name__ == "__main__":

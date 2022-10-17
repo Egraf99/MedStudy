@@ -94,26 +94,23 @@ class Ui_MainWindow(object):
 class QuestionTable(QtWidgets.QTableWidget):
     def __init__(self, parent=None):
         super(QuestionTable, self).__init__(parent)
-        self.questions = []
 
     def clear_(self):
         self.setRowCount(0)
-        self.questions.clear()
 
     def add_question(self, question: Question):
         row = self.rowCount()
-        self.questions.insert(row, question)
         self.insertRow(row)
-        self.setItem(row, 0, QTableWidgetItem(question.name))
+        item_with_data = QTableWidgetItem(question.name)
+        item_with_data.setData(QtCore.Qt.UserRole, question.id_)
+        self.setItem(row, 0, item_with_data)
         self.setItem(row, 1, QTableWidgetItem(question.short))
-        self.setItem(row, 2, QTableWidgetItem(str(question.order)))
 
     def fill(self, questions: list[Question]):
         self.clear_()
         for question in questions:
             self.add_question(question)
 
-    def get_selected_question(self) -> Question:
+    def get_selected_question_id(self) -> int:
         # у выделенной строки берется значение из поля Порядок
-        index = int(self.selectedItems()[2].text())
-        return self.questions[index-1]
+        return self.selectedIndexes()[0].data(QtCore.Qt.UserRole)

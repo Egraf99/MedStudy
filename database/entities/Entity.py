@@ -17,7 +17,7 @@ class Patient:
         )"""
 
     INSERT_ALL: str = """
-        INSERT INTO Patient (name, age, male) VALUES (?,?,?)
+        INSERT INTO Patients (name, age, male) VALUES (?,?,?)
         """
 
     GET_COUNT: str = """
@@ -76,7 +76,9 @@ class Question:
             require INTEGER NOT NULL DEFAULT 0 CHECK (require IN (0,1)),
             measure TEXT,
             private INTEGER NOT NULL DEFAULT 0 CHECK (private IN (0,1)),
-            order_int INTEGER NOT NULL UNIQUE,
+            start INTEGER NOT NULL DEFAULT 1 CHECK (start IN (0,1)),
+            next_question_id INTEGER NOT NULL DEFAULT -1,
+            block INTEGER NOT NULL DEFAULT 0,
             FOREIGN KEY (type_answer) REFERENCES QuestionType(id)
         )"""
 
@@ -89,6 +91,10 @@ class Question:
             require = ?,
             private = ? 
         WHERE id = ?"""
+
+    UPDATE_NEXT_QUESTION: str = """
+        UPDATE Question SET start = 0, next_question_id = ? WHERE id = ?
+        """
 
     DELETE_BY_ID: str = """
         DELETE FROM Question WHERE id = ?
@@ -103,11 +109,15 @@ class Question:
         """
 
     SELECT_ALL_ORDER_ASC: str = """
-        SELECT * FROM Question ORDER BY order_int ASC
+        SELECT * FROM Question ORDER BY id ASC
         """
 
     SELECT_ALL_FROM_ORDER: str = """
         SELECT * FROM Question WHERE order_int > ? ORDER BY order_int ASC
+        """
+
+    GET: str = """
+        SELECT * FROM Question WHERE id = ?
         """
 
     GET_COUNT: str = """
@@ -121,10 +131,9 @@ class Question:
             type_answer, 
             measure,
             require,
-            private, 
-            order_int
+            private 
             )
-        VALUES (?,?,?,?,?,?,?)"""
+        VALUES (?,?,?,?,?,?)"""
 
     GET_ID_BY_NAME: str = """
         SELECT id FROM Question WHERE name = ?
@@ -146,7 +155,6 @@ class Question:
                  require: int = 0,
                  measure: str = None,
                  private: int = 0,
-                 order: int = None,
                  ):
         self.id_ = id_
         self.name: str = name
@@ -157,7 +165,6 @@ class Question:
         self.require_bool: bool = bool(require)
         self.private_int: int = private
         self.private_bool: bool = bool(private)
-        self.order: int = order
         self.list_answers = None
 
     def set_enable_answers(self, list_answers: list[str] = None):
@@ -236,6 +243,10 @@ class BranchQuestions:
             FOREIGN KEY (answer_id) REFERENCES Answer(id)
         ) 
         """
+
+    UPDATE_TABLE: str = """
+        """
+
 
     DELETE_QUESTION_WITH_ANSWER: str = """
         DELETE FROM BranchQuestions WHERE question_id = ? AND answer_id = ?
