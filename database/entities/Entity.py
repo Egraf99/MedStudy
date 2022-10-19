@@ -76,7 +76,7 @@ class Question:
             require INTEGER NOT NULL DEFAULT 0 CHECK (require IN (0,1)),
             measure TEXT,
             private INTEGER NOT NULL DEFAULT 0 CHECK (private IN (0,1)),
-            start INTEGER NOT NULL DEFAULT 1 CHECK (start IN (0,1)),
+            start INTEGER NOT NULL DEFAULT 0 CHECK (start IN (0,1)),
             next_question_id INTEGER NOT NULL DEFAULT -1,
             block INTEGER NOT NULL DEFAULT 0,
             FOREIGN KEY (type_answer) REFERENCES QuestionType(id)
@@ -93,7 +93,11 @@ class Question:
         WHERE id = ?"""
 
     UPDATE_NEXT_QUESTION: str = """
-        UPDATE Question SET start = 0, next_question_id = ? WHERE id = ?
+        UPDATE Question SET next_question_id = ? WHERE id = ?
+        """
+
+    SET_START: str = """
+        UPDATE Question SET start = 1 WHERE id = ?
         """
 
     DELETE_BY_ID: str = """

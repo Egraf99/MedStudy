@@ -171,6 +171,9 @@ class MedDatabase:
     def update_next_question(self, old_question_id: int, new_question_id: int):
         self.execute(Question.UPDATE_NEXT_QUESTION, new_question_id, old_question_id)
 
+    def set_start_question(self, question_id: int):
+        self.execute(Question.SET_START, question_id)
+
 
 if __name__ == "__main__":
     MedDatabase().add_patient("Ваня", 22, 0)

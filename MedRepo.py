@@ -65,5 +65,9 @@ class MedRepo(Singleton):
         self._db.delete_question_with_answer(question_id, answer_id)
 
     def update_next_question(self, old_question_id: int, new_question_id: int):
-        if old_question_id <= -1: return
-        self._db.update_next_question(old_question_id, new_question_id)
+        # это первый вопрос
+        if old_question_id <= -1:
+            self._db.set_start_question(new_question_id)
+        # это не первый вопрос
+        else:
+            self._db.update_next_question(old_question_id, new_question_id)
