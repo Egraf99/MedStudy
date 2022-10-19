@@ -23,10 +23,10 @@ class JumpToDialog(Ui_JumpToDialog, QDialog):
 
     def _set_jump_questions(self, question_list: list[Question]):
         for question in question_list:
-            self.jump_comboBox.addItem(f"{question.order}) {question.name}", question.id_)
+            self.jump_comboBox.addItem(question.name, question.id_)
 
     def _set_question_name(self, question: Question):
-        self.question_comboBox.setTitle(f"{question.order}) {question.name}")
+        self.question_comboBox.setTitle(question.name)
 
     def _connect_button(self):
         self.saveAndCancelButtonBox.accepted.connect(self._update_jump)
@@ -52,8 +52,9 @@ class SetCircleDialog(Ui_SetCircleDialog, QDialog):
         self._set_question_name(question)
         self._set_answers(question.type_, self.med_repo.get_enable_answers(question.id_))
         self._set_cycle(question.type_)
-        self._set_start_questions(self.med_repo.get_question_witch_more_than_order(question.order))
-        self._set_finish_questions(self.med_repo.get_question_witch_more_than_order(question.order))
+        next_questions = self.med_repo.get_next_questions(question.id_)
+        self._set_start_questions(next_questions)
+        self._set_finish_questions(next_questions)
         self._connect_buttons()
 
     def _set_answers(self, question_type: int, answers_list: list[Answer]):
@@ -94,12 +95,12 @@ class SetCircleDialog(Ui_SetCircleDialog, QDialog):
         return self.finish_comboBox.currentData()
 
     def _set_question_name(self, question: Question):
-        self.question_comboBox.setTitle(f"{question.order}) {question.name}")
+        self.question_comboBox.setTitle(question.name)
 
     def _set_start_questions(self, list_questions: list[Question]):
         for question in list_questions:
-            self.start_comboBox.addItem(f"{question.order}) {question.name}", question.id_)
+            self.start_comboBox.addItem(question.name, question.id_)
 
     def _set_finish_questions(self, list_questions: list[Question]):
         for question in list_questions:
-            self.finish_comboBox.addItem(f"{question.order}) {question.name}", question.id_)
+            self.finish_comboBox.addItem(question.name, question.id_)

@@ -159,6 +159,9 @@ class Question:
                  require: int = 0,
                  measure: str = None,
                  private: int = 0,
+                 start: int = 0,
+                 next_question_id: int = -1,
+                 block: int = 0
                  ):
         self.id_ = id_
         self.name: str = name
@@ -169,6 +172,9 @@ class Question:
         self.require_bool: bool = bool(require)
         self.private_int: int = private
         self.private_bool: bool = bool(private)
+        self.start: bool = bool(start)
+        self.next_question_id = next_question_id
+        self.block = block
         self.list_answers = None
 
     def set_enable_answers(self, list_answers: list[str] = None):

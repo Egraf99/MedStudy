@@ -3,6 +3,7 @@ import traceback
 
 from PyQt5.QtWidgets import QApplication
 
+from database.MedDatabase import MedDatabase
 from ui.admin.Window import Window
 
 
@@ -30,3 +31,4 @@ sys.excepthook = excepthook
 
 if __name__ == '__main__':
     main()
+    # print(MedDatabase().get_next_questions(2))

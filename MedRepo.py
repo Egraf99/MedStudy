@@ -22,6 +22,7 @@ class MedRepo(Singleton):
 
     def get_question_by_id(self, id_: int) -> Question:
         return self._db.get_question_by_id(id_)
+
     def get_count_questions(self) -> int:
         return self._db.get_count_questions()
 
@@ -43,13 +44,13 @@ class MedRepo(Singleton):
     def delete_question(self, question_id: int):
         self._db.delete_question(question_id)
 
-    def get_question_witch_more_than_order(self, order: int) -> list[Question]:
-        return self._db.get_question_witch_more_than_order(order)
+    def get_next_questions(self, question_id: int) -> list[Question]:
+        return self._db.get_next_questions(question_id)
 
     def update_jump(self, question_id: int, answer_id: int, destination_id: int):
         self._db.update_jump(question_id, answer_id, destination_id)
 
-    def update_cycle(self, question_id: int, answer_id: int, start_id: int, finish_id: int, cycle:int):
+    def update_cycle(self, question_id: int, answer_id: int, start_id: int, finish_id: int, cycle: int):
         self._db.update_cycle(question_id, answer_id, start_id, finish_id, cycle)
 
     def get_patients_name(self) -> list[Patient]:

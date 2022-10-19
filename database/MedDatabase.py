@@ -12,6 +12,9 @@ def _list_question_from_response(questions_list_response: list) -> list[Question
                                               require=question[4],
                                               measure=question[5],
                                               private=question[6],
+                                              start=question[7],
+                                              next_question_id=question[8],
+                                              block=question[9]
                                               ),
                     questions_list_response))
 
@@ -143,9 +146,16 @@ class MedDatabase:
         self.execute(EnableAnswers.DELETE_ANSWERS_FROM_QUESTION, question_id)
         self.execute(BranchQuestions.DELETE_ANSWERS_FROM_QUESTION, question_id)
 
-    def get_question_witch_more_than_order(self, order: int) -> list[Question]:
-        questions_list = self.execute(Question.SELECT_ALL_FROM_ORDER, order, need_answer=True)
-        return _list_question_from_response(questions_list)
+    def get_next_questions(self, question_id: int) -> list[Question]:
+        def gnq(id_: int, acc: list[Question]) -> list[Question]:
+            if id_ == -1:
+                return acc
+            else:
+                question_ = _list_question_from_response(self.execute(Question.GET, id_, need_answer=True))[0]
+                acc.append(question_)
+                return gnq(question_.next_question_id, acc)
+        question = _list_question_from_response(self.execute(Question.GET, question_id, need_answer=True))[0]
+        return gnq(question.next_question_id, list())
 
     def update_jump(self, question_id: int, answer_id: int, destination_id: int):
         self.execute(EnableAnswers.UPDATE_JUMP, destination_id, question_id, answer_id)
