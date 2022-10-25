@@ -104,6 +104,10 @@ class Question:
         UPDATE Question SET next_question_id = ? WHERE id = ?
         """
 
+    UPDATE_SET_NEW_START: str = """
+        UPDATE Question SET start = 1 WHERE id = ?
+        """
+
     SET_START: str = """
         UPDATE Question SET start = 1 WHERE id = ?
         """
@@ -112,12 +116,29 @@ class Question:
         UPDATE Question SET next_question_id = -1 WHERE id = ?
         """
 
+    SET_STOP_INSTEAD_QUESTION: str = """
+        UPDATE Question SET next_question_id = -1 WHERE next_question_id = ?
+        """
+
+    SET_STOP_WHERE_NEXT_QUESTION: str = """
+        UPDATE Question SET next_question_id = -1 WHERE next_question_id = ?
+        """
+
     SET_NEW_NEXT_QUESTION: str = """
         UPDATE Question SET next_question_id = (SELECT next_question_id FROM Question WHERE id = ?) WHERE id = ?
         """
 
     DELETE_BY_ID: str = """
         DELETE FROM Question WHERE id = ?
+        """
+
+    UPDATE_CHAIN_DELETE: str = """
+        UPDATE Question
+        SET next_question_id = 
+            (SELECT next_question_id 
+             FROM Question 
+             WHERE question_id = ?) 
+        WHERE question_id = ?
         """
 
     UPDATE_ORDER: str = """
@@ -138,6 +159,10 @@ class Question:
 
     GET: str = """
         SELECT * FROM Question WHERE id = ?
+        """
+
+    GET_PREV: str = """
+        SELECT * FROM Question WHERE next_question_id = ?
         """
 
     GET_COUNT: str = """
@@ -227,6 +252,13 @@ class EnableAnswers:
         )
         """
 
+    DELETE_QUESTION: str = """
+        DELETE FROM EnableAnswers WHERE question_id = ? 
+        """
+
+    DELETE_JUMP: str = """
+        DELETE FROM EnableAnswers WHERE jump_to_question = ? 
+        """
     DELETE_QUESTION_AND_ANSWER: str = """
         DELETE FROM EnableAnswers WHERE question_id = ? AND answer_id = ?
         """
@@ -276,6 +308,10 @@ class EnableAnswers:
 
     UPDATE_JUMP: str = """
         UPDATE EnableAnswers SET jump_to_question = ? WHERE question_id = ? AND answer_id =?
+        """
+
+    UPDATE_JUMP_QUESTION: str = """
+        UPDATE EnableAnswers SET jump_to_question = ? WHERE jump_to_question = ?
         """
 
 

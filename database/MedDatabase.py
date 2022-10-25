@@ -5,6 +5,32 @@ from database.entities.Entity import *
 from database.entities.Entity import Answer
 
 
+def _answer_from_response(answer: list) -> Answer:
+    return Answer(id_=answer[0], name=answer[1])
+
+
+def _question_from_response(question: list) -> Question:
+    question_ = question[0]
+    return Question(id_=question_[0],
+                    name=question_[1],
+                    short=question_[2],
+                    type_=question_[3],
+                    require=question_[4],
+                    measure=question_[5],
+                    private=question_[6],
+                    start=question_[7],
+                    next_question_id=question_[8],
+                    block=question_[9]
+                    )
+
+
+def _list_answers_from_response(answers_list_response: list) -> list[Answer]:
+    return list(map(lambda answer: Answer(id_=answer[0],
+                                          name=answer[1],
+                                          ),
+                    answers_list_response))
+
+
 def _list_question_from_response(questions_list_response: list) -> list[Question]:
     return list(map(lambda question: Question(id_=question[0],
                                               name=question[1],
@@ -118,11 +144,8 @@ class MedDatabase:
         return _list_question_from_response(questions_list)
 
     def get_enable_answers(self, question_id: int) -> list[Answer]:
-        answers_list = self.execute(EnableAnswers.SELECT_BY_QUESTION_ID, question_id, need_answer=True)
-        return list(map(lambda answer: Answer(id_=answer[0],
-                                              name=answer[1],
-                                              ),
-                        answers_list))
+        return _list_answers_from_response(
+            self.execute(EnableAnswers.SELECT_BY_QUESTION_ID, question_id, need_answer=True))
 
     def update_question(self, question: Question):
         self.execute(Question.UPDATE_QUESTION,
@@ -147,11 +170,34 @@ class MedDatabase:
                 self.execute(EnableAnswers.INSERT_ANSWER, question.id_, answer_id)
 
     def delete_question(self, question_id: int):
-        order = self.execute(Question.SELECT_ORDER_BY_ID, question_id, need_answer=True)[0][0]
-        self.execute(Question.DELETE_BY_ID, question_id)
-        self.execute(Question.UPDATE_ORDER, order)
-        self.execute(EnableAnswers.DELETE_ANSWERS_FROM_QUESTION, question_id)
-        self.execute(BranchQuestions.DELETE_ANSWERS_FROM_QUESTION, question_id)
+        question = _question_from_response(self.execute(Question.GET, question_id, need_answer=True))
+        if question.start != 1:
+            prev_question = _question_from_response(self.execute(Question.GET_PREV, question_id, need_answer=True))
+        else:
+            prev_question = None
+
+        if question.next_question_id != -1:
+            next_question = _question_from_response(
+                self.execute(Question.GET, question.next_question_id, need_answer=True))
+        else:
+            next_question = None
+
+        if next_question is None and prev_question is None:
+            self.execute(EnableAnswers.DELETE_JUMP, question.id_)
+
+        elif prev_question is None:
+            self.execute(Question.UPDATE_SET_NEW_START, question.next_question_id)
+            self.execute(EnableAnswers.UPDATE_JUMP_QUESTION, question.next_question_id, question.id_)
+
+        elif next_question is None:
+            self.execute(Question.SET_STOP_INSTEAD_QUESTION, question.id_)
+            self.execute(EnableAnswers.DELETE_JUMP, question.id_)
+
+        else:
+            self.execute(Question.UPDATE_NEXT_QUESTION, question.next_question_id, prev_question.id_)
+
+        self.execute(Question.DELETE_BY_ID, question.id_)
+        self.execute(EnableAnswers.DELETE_QUESTION, question.id_)
 
     def get_next_questions(self, question_id: int) -> list[Question]:
         """Return chain next questions with receive question on first position. """
@@ -160,7 +206,7 @@ class MedDatabase:
             if id_ == -1:
                 return acc
             else:
-                question_ = _list_question_from_response(self.execute(Question.GET, id_, need_answer=True))[0]
+                question_ = _question_from_response(self.execute(Question.GET, id_, need_answer=True))
                 acc.append(question_)
                 return gnq(question_.next_question_id, acc)
 
@@ -183,7 +229,7 @@ class MedDatabase:
             else:
                 return {Answer(answer_id, answer_name): [bool(cycle), self.get_next_questions(jump_question_id)]}
 
-        question = _list_question_from_response(self.execute(Question.GET, question_id, need_answer=True))[0]
+        question = _question_from_response(self.execute(Question.GET, question_id, need_answer=True))
         return_dict = {}
         question_branch = self.execute(EnableAnswers.SELECT_CYCLE_BY_QUESTION_ID, question.id_, need_answer=True)
         # добавляем доступные вопросы при различных ответах
