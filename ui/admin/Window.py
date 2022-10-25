@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QMainWindow
 
 from MedRepo import MedRepo
+from database.MedDatabase import QuestionNotFoundError
 from database.entities.Entity import Question
 from ui.admin.MainWindowUI import Ui_MainWindow
 from ui.admin.questions_window.AddAnswerDialog import AddAnswerDialog
@@ -16,9 +17,9 @@ class Window(QMainWindow, Ui_MainWindow):
         self.update_table()
         self.connection_signal_slot()
         try:
-            self.old_question_id = self.med_repo.get_questions()[-1].id_
-        except IndexError:
-            self.old_question_id = -1
+            self.last_question_id = self.med_repo.get_last_question_in_main_block().id_
+        except QuestionNotFoundError:
+            self.last_question_id = -1
 
     def connection_signal_slot(self):
         self.new_question_button.clicked.connect(self._add_question_show)
@@ -54,8 +55,8 @@ class Window(QMainWindow, Ui_MainWindow):
                              after_update_func=self.update_table).exec()
 
     def after_add_question(self, new_question_id: int):
-        self.med_repo.update_next_question(self.old_question_id, new_question_id)
-        self.old_question_id = new_question_id
+        self.med_repo.update_next_question(self.last_question_id, new_question_id)
+        self.last_question_id = new_question_id
         self.update_table()
 
     def update_table(self):

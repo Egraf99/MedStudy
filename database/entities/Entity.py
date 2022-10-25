@@ -165,6 +165,10 @@ class Question:
         SELECT * FROM Question WHERE next_question_id = ?
         """
 
+    GET_LAST: str = """
+        SELECT * FROM Question WHERE next_question_id = -1 AND block = ?
+        """
+
     GET_COUNT: str = """
         SELECT COUNT(*) FROM Question
         """

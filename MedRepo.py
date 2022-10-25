@@ -44,6 +44,9 @@ class MedRepo(Singleton):
     def delete_question(self, question_id: int):
         self._db.delete_question(question_id)
 
+    def get_last_question_in_main_block(self) -> Question:
+        return self._db.get_last_question(0)
+
     def get_next_questions(self, question_id: int) -> list[Question]:
         return self._db.get_next_questions(question_id)
 

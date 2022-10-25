@@ -5,6 +5,9 @@ from database.entities.Entity import *
 from database.entities.Entity import Answer
 
 
+class QuestionNotFoundError(Exception):
+    pass
+
 def _answer_from_response(answer: list) -> Answer:
     return Answer(id_=answer[0], name=answer[1])
 
@@ -272,6 +275,12 @@ class MedDatabase:
 
     def set_start_question(self, question_id: int):
         self.execute(Question.SET_START, question_id)
+
+    def get_last_question(self, block: int) -> Question:
+        try:
+            return _question_from_response(self.execute(Question.GET_LAST, block, need_answer=True))
+        except IndexError:
+            raise QuestionNotFoundError()
 
 
 if __name__ == "__main__":
