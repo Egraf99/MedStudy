@@ -1,5 +1,5 @@
 import sqlite3
-from typing import Optional, Dict, List, Union
+from typing import Optional, Dict, List, Union, Literal
 
 from database.entities.Entity import *
 from database.entities.Entity import Answer
@@ -154,6 +154,8 @@ class MedDatabase:
         self.execute(BranchQuestions.DELETE_ANSWERS_FROM_QUESTION, question_id)
 
     def get_next_questions(self, question_id: int) -> list[Question]:
+        """Return chain next questions with receive question on first position. """
+
         def gnq(id_: int, acc: list[Question]) -> list[Question]:
             if id_ == -1:
                 return acc
@@ -165,11 +167,15 @@ class MedDatabase:
         # question = _list_question_from_response(self.execute(Question.GET, question_id, need_answer=True))[0]
         return gnq(question_id, list())
 
-    def get_jump(self, question_id: int) -> dict[Union[str, Answer], list[bool, list[Question]]]:
-        question = _list_question_from_response(self.execute(Question.GET, question_id, need_answer=True))[0]
+    def get_jump(self, question_id: int) -> dict[Union[Literal['basic_block'], Answer], list[bool, list[Question]]]:
+        """Return dictionary with all variants branch questions, where key is:
+             - answer on question for open blocks
+             - or "basic_block" for next questions in same block where receive question. """
+
         def _answer_to_dict(answer_id: Optional[int], answer_name: Optional[str], jump_question_id: Optional[int],
                             cycle: int) -> \
                 dict[Answer, list[bool, list[Question]]]:
+            """Transformation receive from DB to dictionary."""
             if jump_question_id is None:
                 return {Answer(answer_id, answer_name): [False, list()]}
             elif answer_id is None or answer_name is None:
@@ -177,6 +183,7 @@ class MedDatabase:
             else:
                 return {Answer(answer_id, answer_name): [bool(cycle), self.get_next_questions(jump_question_id)]}
 
+        question = _list_question_from_response(self.execute(Question.GET, question_id, need_answer=True))[0]
         return_dict = {}
         question_branch = self.execute(EnableAnswers.SELECT_CYCLE_BY_QUESTION_ID, question.id_, need_answer=True)
         # добавляем доступные вопросы при различных ответах

@@ -4,7 +4,7 @@ from MedRepo import MedRepo
 from database.entities.Entity import Question
 from ui.admin.MainWindowUI import Ui_MainWindow
 from ui.admin.questions_window.AddAnswerDialog import AddAnswerDialog
-from ui.admin.questions_window.JumpToAndCicleDialogs import JumpToDialog, SetCircleDialog
+from ui.admin.questions_window.JumpToAndCicleDialogs import SetCircleDialog
 from ui.admin.questions_window.QuestionDialogs import AddNewQuestionDialog, UpdateQuestionDialog
 
 
@@ -29,10 +29,6 @@ class Window(QMainWindow, Ui_MainWindow):
 
     def _add_question_show(self):
         AddNewQuestionDialog(parent=self, after_save_func=self.after_add_question).exec()
-
-    def _jump_to_dialog_show(self):
-        question = self.questions_table.get_selected_question()
-        JumpToDialog(question, parent=self).exec()
 
     def _add_answer_dialog_show(self):
         question_id = self.questions_table.get_selected_question_id()
