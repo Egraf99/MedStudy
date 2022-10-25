@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'set_cicrcle.ui'
+# Form implementation generated from reading ui file 'ui/qt/set_cicrcle.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.7
 #
@@ -74,11 +74,20 @@ class Ui_SetCircleDialog(object):
         self.cycle_check_box.setObjectName("cycle_check_box")
         self.horizontalLayout_2.addWidget(self.cycle_check_box)
         self.verticalLayout_4.addLayout(self.horizontalLayout_2)
+        self.horizontalLayout_5 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_5.setObjectName("horizontalLayout_5")
+        self.pushButton = QtWidgets.QPushButton(SetCircleDialog)
+        self.pushButton.setEnabled(False)
+        self.pushButton.setObjectName("pushButton")
+        self.horizontalLayout_5.addWidget(self.pushButton)
+        spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_5.addItem(spacerItem3)
         self.saveAndCancelButtonBox = QtWidgets.QDialogButtonBox(SetCircleDialog)
         self.saveAndCancelButtonBox.setOrientation(QtCore.Qt.Horizontal)
         self.saveAndCancelButtonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Save)
         self.saveAndCancelButtonBox.setObjectName("saveAndCancelButtonBox")
-        self.verticalLayout_4.addWidget(self.saveAndCancelButtonBox)
+        self.horizontalLayout_5.addWidget(self.saveAndCancelButtonBox)
+        self.verticalLayout_4.addLayout(self.horizontalLayout_5)
 
         self.retranslateUi(SetCircleDialog)
         self.saveAndCancelButtonBox.accepted.connect(SetCircleDialog.accept) # type: ignore
@@ -94,3 +103,4 @@ class Ui_SetCircleDialog(object):
         self.finish_label.setText(_translate("SetCircleDialog", "По:"))
         self.label_2.setText(_translate("SetCircleDialog", "доступны"))
         self.cycle_check_box.setText(_translate("SetCircleDialog", "и повторяются"))
+        self.pushButton.setText(_translate("SetCircleDialog", "Удалить ветвление"))

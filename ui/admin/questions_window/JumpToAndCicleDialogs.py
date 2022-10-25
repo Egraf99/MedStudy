@@ -52,9 +52,10 @@ class SetCircleDialog(Ui_SetCircleDialog, QDialog):
         self._set_question_name(question)
         self._set_answers(question.type_, self.med_repo.get_enable_answers(question.id_))
         self._set_cycle(question.type_)
-        next_questions = self.med_repo.get_next_questions(question.id_)
-        self._set_start_questions(next_questions)
-        self._set_finish_questions(next_questions)
+        self.next_questions = self.med_repo.get_jump(question.id_)
+        print(self.next_questions)
+        self._set_start_questions(self.next_questions["basic_block"][1])
+        self._set_finish_questions(self.next_questions["basic_block"][1])
         self._connect_buttons()
 
     def _set_answers(self, question_type: int, answers_list: list[Answer]):

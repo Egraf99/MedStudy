@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List, Dict, Union
 
 from database.MedDatabase import MedDatabase
 from database.entities.Entity import Patient, Question, Answer
@@ -46,6 +46,9 @@ class MedRepo(Singleton):
 
     def get_next_questions(self, question_id: int) -> list[Question]:
         return self._db.get_next_questions(question_id)
+
+    def get_jump(self, question_id: int) -> dict[Union[str, Answer], list[bool, list[Question]]]:
+        return self._db.get_jump(question_id)
 
     def update_jump(self, question_id: int, answer_id: int, destination_id: int):
         self._db.update_jump(question_id, answer_id, destination_id)

@@ -65,6 +65,14 @@ class Answer:
         self.id_ = id_
         self.name = name
 
+    def __repr__(self):
+        return str(self.name)
+
+
+class NoAnswer(Answer):
+    def __init__(self):
+        super().__init__(-1, "None")
+
 
 class Question:
     CREATE_TABLE: str = """
@@ -98,6 +106,14 @@ class Question:
 
     SET_START: str = """
         UPDATE Question SET start = 1 WHERE id = ?
+        """
+
+    SET_STOP: str = """
+        UPDATE Question SET next_question_id = -1 WHERE id = ?
+        """
+
+    SET_NEW_NEXT_QUESTION: str = """
+        UPDATE Question SET next_question_id = (SELECT next_question_id FROM Question WHERE id = ?) WHERE id = ?
         """
 
     DELETE_BY_ID: str = """
@@ -181,6 +197,9 @@ class Question:
         if list_answers:
             self.list_answers = list_answers
 
+    def __repr__(self):
+        return str(self.name)
+
 
 class PatientAnswer:
     CREATE_TABLE: str = """
@@ -200,8 +219,9 @@ class EnableAnswers:
     CREATE_TABLE: str = """
         CREATE TABLE IF NOT EXISTS EnableAnswers (
             question_id INTEGER NOT NULL,
-            answer_id INTEGER NOT NULL,
+            answer_id INTEGER,
             jump_to_question INTEGER,
+            cycle INTEGER NOT NULL DEFAULT 0 CHECK (cycle IN (0,1)),
             FOREIGN KEY (question_id) REFERENCES Question(id),
             FOREIGN KEY (answer_id) REFERENCES Answer(id)
         )
@@ -209,6 +229,18 @@ class EnableAnswers:
 
     DELETE_QUESTION_AND_ANSWER: str = """
         DELETE FROM EnableAnswers WHERE question_id = ? AND answer_id = ?
+        """
+
+    DELETE_QUESTION_WITH_NONE_ANSWER: str = """
+        DELETE FROM EnableAnswers WHERE question_id = ? AND answer_id = NULL
+        """
+
+    ADD_BRANCH_TO_QUESTION: str = """
+        INSERT INTO EnableAnswers (question_id, jump_to_question, cycle) VALUES (?,?,?)
+        """
+
+    ADD_BRANCH_TO_QUESTION_ANSWER: str = """
+        INSERT INTO EnableAnswers (question_id, answer_id, jump_to_question, cycle) VALUES (?,?,?,?)
         """
 
     INSERT_NO_ANSWER: str = """
@@ -228,6 +260,14 @@ class EnableAnswers:
         FROM EnableAnswers ea
         INNER JOIN Answer a ON ea.answer_id = a.id
         WHERE ea.question_id = ?
+        """
+
+    SELECT_CYCLE_BY_QUESTION_ID: str = """
+        SELECT ea.answer_id, a.name, ea.jump_to_question, ea.cycle 
+        FROM EnableAnswers ea
+        LEFT JOIN Answer a ON ea.answer_id = a.id
+        LEFT JOIN Question q ON ea.jump_to_question = q.id
+        WHERE question_id = ?
         """
 
     DELETE_ANSWERS_FROM_QUESTION: str = """
@@ -256,7 +296,6 @@ class BranchQuestions:
 
     UPDATE_TABLE: str = """
         """
-
 
     DELETE_QUESTION_WITH_ANSWER: str = """
         DELETE FROM BranchQuestions WHERE question_id = ? AND answer_id = ?

@@ -1,7 +1,8 @@
 import sqlite3
-from typing import Optional
+from typing import Optional, Dict, List, Union
 
 from database.entities.Entity import *
+from database.entities.Entity import Answer
 
 
 def _list_question_from_response(questions_list_response: list) -> list[Question]:
@@ -133,6 +134,12 @@ class MedDatabase:
                      question.private_int,
                      question.id_,
                      )
+        if question.type_ == Question.TypeAnswer.BOOL.value:
+            self.execute(EnableAnswers.INSERT_YES_ANSWER, question.id_)
+            self.execute(EnableAnswers.INSERT_NO_ANSWER, question.id_)
+        if question.type_ in [Question.TypeAnswer.INTEGER.value, Question.TypeAnswer.TEXT.value,
+                              Question.TypeAnswer.FLOAT.value]:
+            self.execute(EnableAnswers.DELETE_ANSWERS_FROM_QUESTION, question.id_)
         if question.list_answers:
             self.execute(EnableAnswers.DELETE_ANSWERS_FROM_QUESTION, question.id_)
             for answer in question.list_answers:
@@ -154,8 +161,31 @@ class MedDatabase:
                 question_ = _list_question_from_response(self.execute(Question.GET, id_, need_answer=True))[0]
                 acc.append(question_)
                 return gnq(question_.next_question_id, acc)
+
+        # question = _list_question_from_response(self.execute(Question.GET, question_id, need_answer=True))[0]
+        return gnq(question_id, list())
+
+    def get_jump(self, question_id: int) -> dict[Union[str, Answer], list[bool, list[Question]]]:
         question = _list_question_from_response(self.execute(Question.GET, question_id, need_answer=True))[0]
-        return gnq(question.next_question_id, list())
+        def _answer_to_dict(answer_id: Optional[int], answer_name: Optional[str], jump_question_id: Optional[int],
+                            cycle: int) -> \
+                dict[Answer, list[bool, list[Question]]]:
+            if jump_question_id is None:
+                return {Answer(answer_id, answer_name): [False, list()]}
+            elif answer_id is None or answer_name is None:
+                return {NoAnswer: [bool(cycle), self.get_next_questions(jump_question_id)]}
+            else:
+                return {Answer(answer_id, answer_name): [bool(cycle), self.get_next_questions(jump_question_id)]}
+
+        return_dict = {}
+        question_branch = self.execute(EnableAnswers.SELECT_CYCLE_BY_QUESTION_ID, question.id_, need_answer=True)
+        # добавляем доступные вопросы при различных ответах
+        for branch in question_branch:
+            return_dict.update(_answer_to_dict(*branch))
+
+        # добавляем вопросы, котороые идут в основном блоке после данного вопроса
+        return_dict["basic_block"] = [False, self.get_next_questions(question.next_question_id)]
+        return return_dict
 
     def update_jump(self, question_id: int, answer_id: int, destination_id: int):
         self.execute(EnableAnswers.UPDATE_JUMP, destination_id, question_id, answer_id)
@@ -175,8 +205,14 @@ class MedDatabase:
         self.execute(EnableAnswers.DELETE_QUESTION_AND_ANSWER, question_id, answer_id)
 
     def update_cycle(self, question_id: int, answer_id: int, from_: int, to: int, cycle: int):
-        self.execute(BranchQuestions.DELETE_QUESTION_WITH_ANSWER, question_id, answer_id)
-        self.execute(BranchQuestions.INSERT_BRANCH, question_id, answer_id, from_, to, cycle)
+        if answer_id is None:
+            self.execute(EnableAnswers.DELETE_QUESTION_WITH_NONE_ANSWER, question_id)
+            self.execute(EnableAnswers.ADD_BRANCH_TO_QUESTION, question_id, from_, cycle)
+        else:
+            self.execute(EnableAnswers.DELETE_QUESTION_AND_ANSWER, question_id, answer_id)
+            self.execute(EnableAnswers.ADD_BRANCH_TO_QUESTION, question_id, answer_id, from_, cycle)
+        self.execute(Question.SET_NEW_NEXT_QUESTION, to, question_id)
+        self.execute(Question.SET_STOP, to)
 
     def update_next_question(self, old_question_id: int, new_question_id: int):
         self.execute(Question.UPDATE_NEXT_QUESTION, new_question_id, old_question_id)
