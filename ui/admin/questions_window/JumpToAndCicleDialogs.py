@@ -25,7 +25,7 @@ class SetCircleDialog(Ui_SetCircleDialog, QDialog):
         self.question = question
         self._update_next_questions()
         self._set_question_title(question.name)
-        self._set_answers(question.type_, self._get_answers(self.answers_branch.copy()))
+        self._set_answers(question.type_, (self.answers_branch.keys()))
         self._set_cycle(question.type_)
         self._set_choose_questions()
         self._connect_buttons()
@@ -34,9 +34,6 @@ class SetCircleDialog(Ui_SetCircleDialog, QDialog):
         next_questions = self.med_repo.get_jump(self.question.id_)
         self.basic_block = next_questions.pop("basic_block")
         self.answers_branch = next_questions
-
-    def _get_answers(self, dictionary: dict) -> list[Answer]:
-        return list(dictionary.keys())
 
     def _set_answers(self, question_type: int, answers_list: list[Answer]):
         # если вопрос числовой, то в блокируем поле ответов для выбора
@@ -58,6 +55,8 @@ class SetCircleDialog(Ui_SetCircleDialog, QDialog):
 
     def _connect_buttons(self):
         self.answer_combo_box.currentIndexChanged.connect(self._set_choose_questions)
+        self.start_comboBox.currentIndexChanged.connect(
+            lambda: self._update_finish_combobox(self.start_comboBox.currentData()))
         self.deleteBranch_button.clicked.connect(self._delete_branch)
         self.save_button.clicked.connect(self._save_circle_in_db)
         self.cancel_button.clicked.connect(self.close)
@@ -67,6 +66,9 @@ class SetCircleDialog(Ui_SetCircleDialog, QDialog):
         self.med_repo.delete_branch(self.question, answer_id)
         self._update_next_questions()
         self._set_choose_questions()
+
+    def _update_finish_combobox(self, question_id: int):
+        self._set_new_items_to_combobox(self.finish_comboBox, self.med_repo.get_next_questions(question_id))
 
     def _save_circle_in_db(self):
         answer_id = self._take_answer_id()
@@ -92,17 +94,17 @@ class SetCircleDialog(Ui_SetCircleDialog, QDialog):
           или показывает уже используемое ветвление для выбранного ответа
          (или для всего вопроса, если доступных ответов нет)."""
         choose_answer = self._take_answer_id()
-        question_list = _get_answer(self.answers_branch, choose_answer)
-        if len(question_list) == 0 or len(question_list[1]) == 0:
+        self.question_list = _get_answer(self.answers_branch, choose_answer)
+        if len(self.question_list) == 0 or len(self.question_list[1]) == 0:
             # нет доступных ответов или нет ветвлений от выбранного ответа
             self._set_new_items_to_combobox(self.start_comboBox, self.basic_block[1], enable=True)
             self._set_new_items_to_combobox(self.finish_comboBox, self.basic_block[1], enable=True)
             self.save_button.setEnabled(True)
             self.deleteBranch_button.setEnabled(False)
-        elif len(question_list) != 0:
+        elif len(self.question_list) != 0:
             # есть ветвление от выбранного ответа
-            self._set_new_items_to_combobox(self.start_comboBox, [question_list[1][0]], enable=False)
-            self._set_new_items_to_combobox(self.finish_comboBox, [question_list[1][0]], enable=False)
+            self._set_new_items_to_combobox(self.start_comboBox, [self.question_list[1][0]], enable=False)
+            self._set_new_items_to_combobox(self.finish_comboBox, [self.question_list[1][0]], enable=False)
             self.save_button.setEnabled(False)
             self.deleteBranch_button.setEnabled(True)
 
