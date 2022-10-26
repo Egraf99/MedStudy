@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import QDialog
 
 from MedRepo import MedRepo
 from database.entities.Entity import Question
+from ui.admin.questions_window.MoveQuestionDialog import MoveQuestionDialog
 from ui.admin.questions_window.QuestionDialogUI import Ui_Dialog
 
 
@@ -111,7 +112,7 @@ class UpdateQuestionDialog(QuestionDialog):
     def __init__(self, question_id: int, after_update_func=None, parent=None):
         super().__init__(parent)
         self.after_update_func = after_update_func
-        self.set_delete_button()
+        self.set_change_buttons()
         self.old_question = self.med_repo.get_question_by_id(question_id)
         self.set_values(self.old_question)
         self.update_question_name(self.old_question.name)
@@ -121,7 +122,11 @@ class UpdateQuestionDialog(QuestionDialog):
 
     def _connection_signal_slot(self):
         super()._connection_signal_slot()
+        self.move_button.clicked.connect(self._move_question_dialog_show)
         self.delete_button.clicked.connect(self._delete_button_clicked)
+
+    def _move_question_dialog_show(self):
+        MoveQuestionDialog(self.old_question.id_).exec()
 
     def _delete_button_clicked(self):
         self.med_repo.delete_question(self.old_question.id_)

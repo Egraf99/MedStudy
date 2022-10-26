@@ -81,3 +81,6 @@ class MedRepo(Singleton):
         # это не первый вопрос
         else:
             self._db.update_next_question(old_question_id, new_question_id)
+
+    def set_prev_question(self, prev_question_id: int, current_question: Question):
+        self._db.set_prev_question(prev_question_id, current_question)

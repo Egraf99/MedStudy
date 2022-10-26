@@ -96,6 +96,9 @@ class Ui_Dialog(object):
         self.delete_button = QtWidgets.QPushButton(Dialog)
         self.delete_button.setObjectName("delete_button")
         self.delete_button.setVisible(False)
+        self.move_button = QtWidgets.QPushButton(Dialog)
+        self.move_button.setObjectName("move_button")
+        self.move_button.setVisible(False)
         self.saveAndCloseButtonsBox = QtWidgets.QDialogButtonBox(Dialog)
         self.saveAndCloseButtonsBox.setOrientation(QtCore.Qt.Horizontal)
         self.saveAndCloseButtonsBox.setStandardButtons(QtWidgets.QDialogButtonBox.Close|QtWidgets.QDialogButtonBox.Save)
@@ -116,9 +119,11 @@ class Ui_Dialog(object):
         self.float_answer_radioButton.toggled['bool'].connect(self.measure_lineEdit.setEnabled) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
-    def set_delete_button(self):
+    def set_change_buttons(self):
         self.delete_button.setVisible(True)
         self.horizontalLayout_4.insertWidget(0, self.delete_button)
+        self.move_button.setVisible(True)
+        self.horizontalLayout_4.insertWidget(1, self.move_button)
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
@@ -135,4 +140,5 @@ class Ui_Dialog(object):
         self.label_2.setText(_translate("Dialog", "Ед. измер."))
         self.private_checkBox.setText(_translate("Dialog", "&Указание на личность пациента"))
         self.require_checkBox.setText(_translate("Dialog", "&Обязательный вопрос"))
-        self.delete_button.setText(_translate("Dialog", "Delete"))
+        self.delete_button.setText(_translate("Dialog", "Удалить"))
+        self.move_button.setText(_translate("Dialog", "Переместить"))

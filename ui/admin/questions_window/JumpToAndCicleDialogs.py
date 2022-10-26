@@ -17,6 +17,13 @@ def _get_answer(d: dict[Answer, list[bool, list[Question]]], answer_id: int) -> 
     return list()
 
 
+def set_new_items_to_combobox(combobox: QComboBox, list_questions: list[Question], enable: bool = True):
+    combobox.clear()
+    for question in list_questions:
+        combobox.addItem(question.name, question.id_)
+    combobox.setEnabled(enable)
+
+
 class SetCircleDialog(Ui_SetCircleDialog, QDialog):
     def __init__(self, question: Question, parent=None):
         super().__init__(parent)
@@ -72,7 +79,7 @@ class SetCircleDialog(Ui_SetCircleDialog, QDialog):
 
     def _update_finish_combobox(self, question_id: int):
         if question_id is None: return
-        self._set_new_items_to_combobox(self.finish_comboBox, self.med_repo.get_next_questions(question_id))
+        set_new_items_to_combobox(self.finish_comboBox, self.med_repo.get_next_questions(question_id))
 
     def _save_circle_in_db(self):
         answer_id = self._take_answer_id()
@@ -102,19 +109,13 @@ class SetCircleDialog(Ui_SetCircleDialog, QDialog):
         self.question_list = _get_answer(self.answers_branch, choose_answer)
         if len(self.question_list) == 0 or len(self.question_list[1]) == 0:
             # нет доступных ответов или нет ветвлений от выбранного ответа
-            self._set_new_items_to_combobox(self.start_comboBox, self.basic_block[1], enable=True)
-            self._set_new_items_to_combobox(self.finish_comboBox, self.basic_block[1], enable=True)
+            set_new_items_to_combobox(self.start_comboBox, self.basic_block[1], enable=True)
+            set_new_items_to_combobox(self.finish_comboBox, self.basic_block[1], enable=True)
             self.save_button.setEnabled(True)
             self.deleteBranch_button.setEnabled(False)
         elif len(self.question_list) != 0:
             # есть ветвление от выбранного ответа
-            self._set_new_items_to_combobox(self.start_comboBox, [self.question_list[1][0]], enable=False)
-            self._set_new_items_to_combobox(self.finish_comboBox, [self.question_list[1][-1]], enable=False)
+            set_new_items_to_combobox(self.start_comboBox, [self.question_list[1][0]], enable=False)
+            set_new_items_to_combobox(self.finish_comboBox, [self.question_list[1][-1]], enable=False)
             self.save_button.setEnabled(False)
             self.deleteBranch_button.setEnabled(True)
-
-    def _set_new_items_to_combobox(self, combobox: QComboBox, list_questions: list[Question], enable: bool = True):
-        combobox.clear()
-        for question in list_questions:
-            combobox.addItem(question.name, question.id_)
-        combobox.setEnabled(enable)
