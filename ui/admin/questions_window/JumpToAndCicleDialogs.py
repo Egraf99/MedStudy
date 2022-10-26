@@ -61,11 +61,14 @@ class SetCircleDialog(Ui_SetCircleDialog, QDialog):
         self.save_button.clicked.connect(self._save_circle_in_db)
         self.cancel_button.clicked.connect(self.close)
 
+    def _update_ui(self):
+        self._update_next_questions()
+        self._set_choose_questions()
+
     def _delete_branch(self):
         answer_id = self._take_answer_id()
         self.med_repo.delete_branch(self.question, answer_id)
-        self._update_next_questions()
-        self._set_choose_questions()
+        self._update_ui()
 
     def _update_finish_combobox(self, question_id: int):
         if question_id is None: return
@@ -76,7 +79,8 @@ class SetCircleDialog(Ui_SetCircleDialog, QDialog):
         start_id = self._take_start_question_id()
         finish_id = self._take_finish_question_id()
         cycle = int(self.cycle_check_box.isChecked())
-        # self.med_repo.update_cycle(self.question.id_, answer_id, start_id, finish_id, cycle)
+        self.med_repo.update_cycle(self.question.id_, answer_id, start_id, finish_id, cycle)
+        self._update_ui()
 
     def _take_answer_id(self) -> int:
         return self.answer_combo_box.currentData()

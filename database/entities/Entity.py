@@ -112,16 +112,19 @@ class Question:
         UPDATE Question SET block = ?, next_question_id = ? WHERE id = ?
         """
 
-    UPDATE_SET_NEW_START: str = """
-        UPDATE Question SET start = 1 WHERE id = ?
+    UPDATE_SET_NEW_START_AND_NEW_BLOCK: str = """
+        UPDATE Question SET start = 1, block = ? WHERE id = ?
         """
+
+    GET_NEXT_BLOCK: str = """
+        SELECT MAX(block)+1 FROM Question"""
 
     SET_START: str = """
         UPDATE Question SET start = 1 WHERE id = ?
         """
 
-    SET_STOP: str = """
-        UPDATE Question SET next_question_id = -1 WHERE id = ?
+    SET_STOP_AND_NEW_BLOCK: str = """
+        UPDATE Question SET next_question_id = -1, block = ? WHERE id = ?
         """
 
     SET_STOP_INSTEAD_QUESTION: str = """
@@ -294,8 +297,8 @@ class EnableAnswers:
         INSERT INTO EnableAnswers (question_id, jump_to_question, cycle) VALUES (?,?,?)
         """
 
-    ADD_BRANCH_TO_QUESTION_ANSWER: str = """
-        INSERT INTO EnableAnswers (question_id, answer_id, jump_to_question, cycle) VALUES (?,?,?,?)
+    ADD_JUMP_TO_QUESTION_ANSWER: str = """
+        UPDATE EnableAnswers SET jump_to_question = ?, cycle = ? WHERE question_id = ? AND answer_id = ?
         """
 
     INSERT_NO_ANSWER: str = """

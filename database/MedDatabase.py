@@ -266,9 +266,11 @@ class MedDatabase:
             self.execute(EnableAnswers.DELETE_QUESTION_WITH_NONE_ANSWER, question_id)
             self.execute(EnableAnswers.ADD_BRANCH_TO_QUESTION, question_id, from_, cycle)
         else:
-            self.execute(EnableAnswers.ADD_BRANCH_TO_QUESTION, question_id, answer_id, from_, cycle)
+            self.execute(EnableAnswers.ADD_JUMP_TO_QUESTION_ANSWER, from_, cycle, question_id, answer_id)
+        block = int(self.execute(Question.GET_NEXT_BLOCK, need_answer=True)[0][0])
+        self.execute(Question.UPDATE_SET_NEW_START_AND_NEW_BLOCK, block, from_)
         self.execute(Question.SET_NEW_NEXT_QUESTION, to, question_id)
-        self.execute(Question.SET_STOP, to)
+        self.execute(Question.SET_STOP_AND_NEW_BLOCK, block, to)
 
     def update_next_question(self, old_question_id: int, new_question_id: int):
         self.execute(Question.UPDATE_NEXT_QUESTION, new_question_id, old_question_id)
