@@ -104,6 +104,14 @@ class Question:
         UPDATE Question SET next_question_id = ? WHERE id = ?
         """
 
+    UPDATE_BLOCK_AND_SET_START_ZERO: str = """
+        UPDATE Question SET block = ?, start = 0 WHERE id = ?
+        """
+
+    UPDATE_BLOCK_AND_SET_NEXT_QUESTION: str = """
+        UPDATE Question SET block = ?, next_question_id = ? WHERE id = ?
+        """
+
     UPDATE_SET_NEW_START: str = """
         UPDATE Question SET start = 1 WHERE id = ?
         """
@@ -229,6 +237,12 @@ class Question:
     def __repr__(self):
         return str(self.name)
 
+    def __eq__(self, other):
+        if type(other) == Question:
+            return self.id_ == other.id_
+        else:
+            return False
+
 
 class PatientAnswer:
     CREATE_TABLE: str = """
@@ -268,7 +282,7 @@ class EnableAnswers:
         """
 
     DELETE_QUESTION_WITH_NONE_ANSWER: str = """
-        DELETE FROM EnableAnswers WHERE question_id = ? AND answer_id = NULL
+        DELETE FROM EnableAnswers WHERE question_id = ? AND answer_id IS NULL
         """
 
     ADD_BRANCH_TO_QUESTION: str = """
@@ -289,6 +303,18 @@ class EnableAnswers:
 
     INSERT_ANSWER: str = """
         INSERT INTO EnableAnswers (question_id, answer_id) VALUES (?,?)
+        """
+
+    GET_JUMP_BY_QUESTION_AND_ANSWER: str = """
+        SELECT * FROM Question WHERE id = (
+            SELECT jump_to_question FROM EnableAnswers WHERE question_id = ? AND answer_id = ?
+            )
+        """
+
+    GET_JUMP_BY_QUESTION_WITH_NONE_ANSWER: str = """
+        SELECT * FROM Question WHERE id = (
+            SELECT jump_to_question FROM EnableAnswers WHERE question_id = ? AND answer_id IS NULL
+            )
         """
 
     SELECT_BY_QUESTION_ID: str = """

@@ -71,6 +71,9 @@ class MedRepo(Singleton):
     def delete_question_with_answer(self, question_id: int, answer_id: int):
         self._db.delete_question_with_answer(question_id, answer_id)
 
+    def delete_branch(self, question: Question, answer_id: int):
+        self._db.delete_branch(question, answer_id)
+
     def update_next_question(self, old_question_id: int, new_question_id: int):
         # это первый вопрос
         if old_question_id <= -1:

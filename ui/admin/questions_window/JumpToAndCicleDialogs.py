@@ -1,8 +1,20 @@
-from PyQt5.QtWidgets import QDialog
+from typing import Any, Union, Tuple, List
+
+from PyQt5.QtWidgets import QDialog, QComboBox
 
 from MedRepo import MedRepo
-from database.entities.Entity import Question, Answer
+from database.entities.Entity import Question, Answer, NoAnswer
 from ui.admin.questions_window.SetCircleDialogUI import Ui_SetCircleDialog
+
+
+def _get_answer(d: dict[Answer, list[bool, list[Question]]], answer_id: int) -> list[bool, list[Question]]:
+    """Return list with answer, where key is given key."""
+    for k, v in d.items():
+        if answer_id is None:
+            return d.get(NoAnswer, list())
+        if answer_id == k.id_:
+            return v
+    return list()
 
 
 class SetCircleDialog(Ui_SetCircleDialog, QDialog):
@@ -11,14 +23,20 @@ class SetCircleDialog(Ui_SetCircleDialog, QDialog):
         self.setupUi(self)
         self.med_repo = MedRepo()
         self.question = question
-        self._set_question_name(question)
-        self._set_answers(question.type_, self.med_repo.get_enable_answers(question.id_))
+        self._update_next_questions()
+        self._set_question_title(question.name)
+        self._set_answers(question.type_, self._get_answers(self.answers_branch.copy()))
         self._set_cycle(question.type_)
-        self.next_questions = self.med_repo.get_jump(question.id_)
-        print(self.next_questions)
-        self._set_start_questions(self.next_questions["basic_block"][1])
-        self._set_finish_questions(self.next_questions["basic_block"][1])
+        self._set_choose_questions()
         self._connect_buttons()
+
+    def _update_next_questions(self):
+        next_questions = self.med_repo.get_jump(self.question.id_)
+        self.basic_block = next_questions.pop("basic_block")
+        self.answers_branch = next_questions
+
+    def _get_answers(self, dictionary: dict) -> list[Answer]:
+        return list(dictionary.keys())
 
     def _set_answers(self, question_type: int, answers_list: list[Answer]):
         # если вопрос числовой, то в блокируем поле ответов для выбора
@@ -39,14 +57,23 @@ class SetCircleDialog(Ui_SetCircleDialog, QDialog):
             self.cycle_check_box.setEnabled(False)
 
     def _connect_buttons(self):
-        self.saveAndCancelButtonBox.accepted.connect(self._save_circle_in_db)
+        self.answer_combo_box.currentIndexChanged.connect(self._set_choose_questions)
+        self.deleteBranch_button.clicked.connect(self._delete_branch)
+        self.save_button.clicked.connect(self._save_circle_in_db)
+        self.cancel_button.clicked.connect(self.close)
+
+    def _delete_branch(self):
+        answer_id = self._take_answer_id()
+        self.med_repo.delete_branch(self.question, answer_id)
+        self._update_next_questions()
+        self._set_choose_questions()
 
     def _save_circle_in_db(self):
         answer_id = self._take_answer_id()
         start_id = self._take_start_question_id()
         finish_id = self._take_finish_question_id()
         cycle = int(self.cycle_check_box.isChecked())
-        self.med_repo.update_cycle(self.question.id_, answer_id, start_id, finish_id, cycle)
+        # self.med_repo.update_cycle(self.question.id_, answer_id, start_id, finish_id, cycle)
 
     def _take_answer_id(self) -> int:
         return self.answer_combo_box.currentData()
@@ -57,13 +84,30 @@ class SetCircleDialog(Ui_SetCircleDialog, QDialog):
     def _take_finish_question_id(self) -> int:
         return self.finish_comboBox.currentData()
 
-    def _set_question_name(self, question: Question):
-        self.question_comboBox.setTitle(question.name)
+    def _set_question_title(self, title: str):
+        self.question_comboBox.setTitle(title)
 
-    def _set_start_questions(self, list_questions: list[Question]):
-        for question in list_questions:
-            self.start_comboBox.addItem(question.name, question.id_)
+    def _set_choose_questions(self):
+        """Выставляет доступные для ветвления вопросы
+          или показывает уже используемое ветвление для выбранного ответа
+         (или для всего вопроса, если доступных ответов нет)."""
+        choose_answer = self._take_answer_id()
+        question_list = _get_answer(self.answers_branch, choose_answer)
+        if len(question_list) == 0 or len(question_list[1]) == 0:
+            # нет доступных ответов или нет ветвлений от выбранного ответа
+            self._set_new_items_to_combobox(self.start_comboBox, self.basic_block[1], enable=True)
+            self._set_new_items_to_combobox(self.finish_comboBox, self.basic_block[1], enable=True)
+            self.save_button.setEnabled(True)
+            self.deleteBranch_button.setEnabled(False)
+        elif len(question_list) != 0:
+            # есть ветвление от выбранного ответа
+            self._set_new_items_to_combobox(self.start_comboBox, [question_list[1][0]], enable=False)
+            self._set_new_items_to_combobox(self.finish_comboBox, [question_list[1][0]], enable=False)
+            self.save_button.setEnabled(False)
+            self.deleteBranch_button.setEnabled(True)
 
-    def _set_finish_questions(self, list_questions: list[Question]):
+    def _set_new_items_to_combobox(self, combobox: QComboBox, list_questions: list[Question], enable: bool = True):
+        combobox.clear()
         for question in list_questions:
-            self.finish_comboBox.addItem(question.name, question.id_)
+            combobox.addItem(question.name, question.id_)
+        combobox.setEnabled(enable)

@@ -8,6 +8,7 @@ from database.entities.Entity import Answer
 class QuestionNotFoundError(Exception):
     pass
 
+
 def _answer_from_response(answer: list) -> Answer:
     return Answer(id_=answer[0], name=answer[1])
 
@@ -281,6 +282,22 @@ class MedDatabase:
             return _question_from_response(self.execute(Question.GET_LAST, block, need_answer=True))
         except IndexError:
             raise QuestionNotFoundError()
+
+    def delete_branch(self, question: Question, answer_id: int):
+        if answer_id is None:
+            first_question_in_branch = _question_from_response(
+                self.execute(EnableAnswers.GET_JUMP_BY_QUESTION_WITH_NONE_ANSWER, question.id_, need_answer=True))
+            self.execute(EnableAnswers.DELETE_QUESTION_WITH_NONE_ANSWER, question.id_)
+        else:
+            first_question_in_branch = _question_from_response(
+                self.execute(EnableAnswers.GET_JUMP_BY_QUESTION_AND_ANSWER, question.id_, answer_id, need_answer=True))
+            self.execute(EnableAnswers.DELETE_QUESTION_AND_ANSWER, question.id_, answer_id)
+        last_question_in_branch = self.get_next_questions(first_question_in_branch.id_)[-1]
+        question_after_block = question.next_question_id
+        self.execute(Question.UPDATE_NEXT_QUESTION, first_question_in_branch.id_, question.id_)
+        self.execute(Question.UPDATE_BLOCK_AND_SET_START_ZERO, question.block, first_question_in_branch.id_)
+        self.execute(Question.UPDATE_BLOCK_AND_SET_NEXT_QUESTION, question.block, question_after_block,
+                     last_question_in_branch.id_)
 
 
 if __name__ == "__main__":

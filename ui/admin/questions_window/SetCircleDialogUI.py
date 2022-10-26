@@ -84,16 +84,15 @@ class Ui_SetCircleDialog(object):
         self.horizontalLayout_5.addWidget(self.deleteBranch_button)
         spacerItem4 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_5.addItem(spacerItem4)
-        self.saveAndCancelButtonBox = QtWidgets.QDialogButtonBox(SetCircleDialog)
-        self.saveAndCancelButtonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.saveAndCancelButtonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Save)
-        self.saveAndCancelButtonBox.setObjectName("saveAndCancelButtonBox")
-        self.horizontalLayout_5.addWidget(self.saveAndCancelButtonBox)
+        self.save_button = QtWidgets.QPushButton(SetCircleDialog)
+        self.save_button.setObjectName("save_button")
+        self.horizontalLayout_5.addWidget(self.save_button)
+        self.cancel_button = QtWidgets.QPushButton(SetCircleDialog)
+        self.cancel_button.setObjectName("cancel_button")
+        self.horizontalLayout_5.addWidget(self.cancel_button)
         self.verticalLayout_4.addLayout(self.horizontalLayout_5)
 
         self.retranslateUi(SetCircleDialog)
-        self.saveAndCancelButtonBox.accepted.connect(SetCircleDialog.accept) # type: ignore
-        self.saveAndCancelButtonBox.rejected.connect(SetCircleDialog.reject) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(SetCircleDialog)
 
     def retranslateUi(self, SetCircleDialog):
@@ -106,3 +105,5 @@ class Ui_SetCircleDialog(object):
         self.label_2.setText(_translate("SetCircleDialog", "доступны"))
         self.cycle_check_box.setText(_translate("SetCircleDialog", "и повторяются"))
         self.deleteBranch_button.setText(_translate("SetCircleDialog", "Удалить ветвление"))
+        self.save_button.setText(_translate("SetCircleDialog", "Сохранить"))
+        self.cancel_button.setText(_translate("SetCircleDialog", "Отмена"))
