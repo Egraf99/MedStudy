@@ -16,6 +16,9 @@ class Window(QMainWindow, Ui_MainWindow):
         self.med_repo = MedRepo()
         self.update_table()
         self.connection_signal_slot()
+        self._update_last_question_id()
+
+    def _update_last_question_id(self):
         try:
             self.last_question_id = self.med_repo.get_last_question_in_main_block().id_
         except QuestionNotFoundError:
@@ -55,8 +58,8 @@ class Window(QMainWindow, Ui_MainWindow):
                              after_update_func=self.update_table).exec()
 
     def after_add_question(self, new_question_id: int):
+        self._update_last_question_id()
         self.med_repo.update_next_question(self.last_question_id, new_question_id)
-        self.last_question_id = new_question_id
         self.update_table()
 
     def update_table(self):

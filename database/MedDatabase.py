@@ -190,7 +190,7 @@ class MedDatabase:
             self.execute(EnableAnswers.DELETE_JUMP, question.id_)
 
         elif prev_question is None:
-            self.execute(Question.UPDATE_SET_NEW_START, question.next_question_id)
+            self.execute(Question.UPDATE_SET_NEW_START_AND_NEW_BLOCK, question.block, question.next_question_id)
             self.execute(EnableAnswers.UPDATE_JUMP_QUESTION, question.next_question_id, question.id_)
 
         elif next_question is None:

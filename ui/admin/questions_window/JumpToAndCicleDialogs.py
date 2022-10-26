@@ -109,7 +109,7 @@ class SetCircleDialog(Ui_SetCircleDialog, QDialog):
         elif len(self.question_list) != 0:
             # есть ветвление от выбранного ответа
             self._set_new_items_to_combobox(self.start_comboBox, [self.question_list[1][0]], enable=False)
-            self._set_new_items_to_combobox(self.finish_comboBox, [self.question_list[1][0]], enable=False)
+            self._set_new_items_to_combobox(self.finish_comboBox, [self.question_list[1][-1]], enable=False)
             self.save_button.setEnabled(False)
             self.deleteBranch_button.setEnabled(True)
 
