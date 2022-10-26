@@ -68,6 +68,7 @@ class SetCircleDialog(Ui_SetCircleDialog, QDialog):
         self._set_choose_questions()
 
     def _update_finish_combobox(self, question_id: int):
+        if question_id is None: return
         self._set_new_items_to_combobox(self.finish_comboBox, self.med_repo.get_next_questions(question_id))
 
     def _save_circle_in_db(self):

@@ -277,6 +277,11 @@ class EnableAnswers:
     DELETE_JUMP: str = """
         DELETE FROM EnableAnswers WHERE jump_to_question = ? 
         """
+
+    SET_NULL_JUMP: str = """
+        UPDATE EnableAnswers SET jump_to_question = NULL WHERE question_id = ? AND answer_id = ?
+        """
+
     DELETE_QUESTION_AND_ANSWER: str = """
         DELETE FROM EnableAnswers WHERE question_id = ? AND answer_id = ?
         """

@@ -266,7 +266,6 @@ class MedDatabase:
             self.execute(EnableAnswers.DELETE_QUESTION_WITH_NONE_ANSWER, question_id)
             self.execute(EnableAnswers.ADD_BRANCH_TO_QUESTION, question_id, from_, cycle)
         else:
-            self.execute(EnableAnswers.DELETE_QUESTION_AND_ANSWER, question_id, answer_id)
             self.execute(EnableAnswers.ADD_BRANCH_TO_QUESTION, question_id, answer_id, from_, cycle)
         self.execute(Question.SET_NEW_NEXT_QUESTION, to, question_id)
         self.execute(Question.SET_STOP, to)
@@ -291,7 +290,7 @@ class MedDatabase:
         else:
             first_question_in_branch = _question_from_response(
                 self.execute(EnableAnswers.GET_JUMP_BY_QUESTION_AND_ANSWER, question.id_, answer_id, need_answer=True))
-            self.execute(EnableAnswers.DELETE_QUESTION_AND_ANSWER, question.id_, answer_id)
+            self.execute(EnableAnswers.SET_NULL_JUMP, question.id_, answer_id)
         last_question_in_branch = self.get_next_questions(first_question_in_branch.id_)[-1]
         question_after_block = question.next_question_id
         self.execute(Question.UPDATE_NEXT_QUESTION, first_question_in_branch.id_, question.id_)
