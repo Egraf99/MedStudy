@@ -300,6 +300,15 @@ class MedDatabase:
         self.execute(Question.UPDATE_BLOCK_AND_SET_NEXT_QUESTION, question.block, question_after_block,
                      last_question_in_branch.id_)
 
+    def set_prev_question(self, set_prev_question_id: int, current_question: Question):
+        if set_prev_question_id == current_question.id_: return
+        set_prev_question = _question_from_response(self.execute(Question.GET, set_prev_question_id, need_answer=True))
+        current_prev_question = _question_from_response(self.execute(Question.GET_PREV, current_question.id_, need_answer=True))
+        self.execute(Question.UPDATE_SET_START_NEXT_AND_BLOCK, current_question.start, current_question.next_question_id, current_question.block, current_prev_question.id_)
+        self.execute(Question.UPDATE_NEXT_QUESTION, current_question.id_, set_prev_question.id_)
+        self.execute(Question.UPDATE_SET_NEXT_AND_BLOCK, set_prev_question.next_question_id, set_prev_question.block,
+                     current_question.id_)
+
 
 if __name__ == "__main__":
     MedDatabase().add_patient("Ваня", 22, 0)

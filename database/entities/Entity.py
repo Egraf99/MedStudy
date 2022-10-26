@@ -156,6 +156,14 @@ class Question:
         UPDATE Question SET order_int = order_int - 1 WHERE order_int > ?
         """
 
+    UPDATE_SET_NEXT_AND_BLOCK: str = """
+        UPDATE Question SET next_question_id = ?, block = ? WHERE id = ?
+        """
+
+    UPDATE_SET_START_NEXT_AND_BLOCK: str = """
+        UPDATE Question SET start = ?, next_question_id = ?, block = ? WHERE id = ?
+        """
+
     SELECT_ORDER_BY_ID: str = """
         SELECT order_int FROM Question WHERE id = ?
         """
