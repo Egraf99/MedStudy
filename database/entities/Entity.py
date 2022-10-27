@@ -104,6 +104,10 @@ class Question:
         UPDATE Question SET next_question_id = ? WHERE id = ?
         """
 
+    UPDATE_BLOCK: str = """
+        UPDATE Question SET block = ? WHERE id = ?
+        """
+
     UPDATE_BLOCK_AND_SET_START_ZERO: str = """
         UPDATE Question SET block = ?, start = 0 WHERE id = ?
         """
@@ -116,6 +120,10 @@ class Question:
         UPDATE Question SET start = 1, block = ? WHERE id = ?
         """
 
+    UPDATE_SET_START: str = """
+        UPDATE Question SET start = 1 WHERE id = ?
+        """
+
     GET_NEXT_BLOCK: str = """
         SELECT MAX(block)+1 FROM Question"""
 
@@ -123,8 +131,8 @@ class Question:
         UPDATE Question SET start = 1 WHERE id = ?
         """
 
-    SET_STOP_AND_NEW_BLOCK: str = """
-        UPDATE Question SET next_question_id = -1, block = ? WHERE id = ?
+    UPDATE_SET_STOP: str = """
+        UPDATE Question SET next_question_id = -1 WHERE id = ?
         """
 
     SET_STOP_INSTEAD_QUESTION: str = """
