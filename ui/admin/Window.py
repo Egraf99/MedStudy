@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QMainWindow
 from MedRepo import MedRepo
 from database.MedDatabase import QuestionNotFoundError
 from database.entities.Entity import Question
-from ui.admin.MainWindowUI import Ui_MainWindow
+from ui.admin.MainWindowUI import Ui_MainWindow, SelectNoQuestionError
 from ui.admin.questions_window.AddAnswerDialog import AddAnswerDialog
 from ui.admin.questions_window.JumpToAndCicleDialogs import SetCircleDialog
 from ui.admin.questions_window.QuestionDialogs import AddNewQuestionDialog, UpdateQuestionDialog
@@ -26,7 +26,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
     def connection_signal_slot(self):
         self.new_question_button.clicked.connect(self._add_question_show)
-        # self.questions_table.cellPressed.connect(self._active_change_buttons)
+        self.question_tree.clicked.connect(self._active_change_buttons)
         self.change_question_button.clicked.connect(self._change_question)
         self.add_answer_button.clicked.connect(self._add_answer_dialog_show)
         self.set_branch_button.clicked.connect(self._set_circle_dialog_show)
@@ -35,17 +35,25 @@ class Window(QMainWindow, Ui_MainWindow):
         AddNewQuestionDialog(parent=self, after_save_func=self.after_add_question).exec()
 
     def _add_answer_dialog_show(self):
-        question_id = self.questions_table.get_selected_question_id()
+        question_id = self.question_tree.get_selected_question_id()
         question = self.med_repo.get_question_by_id(question_id)
         AddAnswerDialog(question, parent=self).exec()
 
     def _set_circle_dialog_show(self):
-        question_id = self.questions_table.get_selected_question_id()
+        question_id = self.question_tree.get_selected_question_id()
         question = self.med_repo.get_question_by_id(question_id)
         SetCircleDialog(question, parent=self).exec()
 
     def _active_change_buttons(self):
-        selected_question = self.med_repo.get_question_by_id(self.questions_table.get_selected_question_id())
+        try:
+            question_id =self.question_tree.get_selected_question_id()
+        except SelectNoQuestionError:
+            self.change_question_button.setEnabled(False)
+            self.set_branch_button.setEnabled(False)
+            self.add_answer_button.setEnabled(False)
+            return
+
+        selected_question = self.med_repo.get_question_by_id(question_id)
         self.change_question_button.setEnabled(True)
         self.set_branch_button.setEnabled(True)
         if selected_question.type_ in [Question.TypeAnswer.SINGLE.value, Question.TypeAnswer.MANY.value]:
@@ -54,7 +62,7 @@ class Window(QMainWindow, Ui_MainWindow):
             self.add_answer_button.setEnabled(False)
 
     def _change_question(self):
-        UpdateQuestionDialog(self.questions_table.get_selected_question_id(), parent=self,
+        UpdateQuestionDialog(self.question_tree.get_selected_question_id(), parent=self,
                              after_update_func=self.update_table).exec()
 
     def after_add_question(self, new_question_id: int):
@@ -63,8 +71,4 @@ class Window(QMainWindow, Ui_MainWindow):
         self.update_table()
 
     def update_table(self):
-        self._add_question_to_table(self.med_repo.get_questions())
-
-    def _add_question_to_table(self, question_list: list[Question]):
-        # self.questions_table.fill(question_list)
-        pass
+        self.question_tree.update()
