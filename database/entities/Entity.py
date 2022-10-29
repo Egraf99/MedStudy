@@ -196,6 +196,10 @@ class Question:
         SELECT * FROM Question WHERE next_question_id = -1 AND block = ?
         """
 
+    GET_FIRST: str = """
+        SELECT * FROM Question WHERE start = 1 AND block = ?
+        """
+
     GET_COUNT: str = """
         SELECT COUNT(*) FROM Question
         """
@@ -367,6 +371,19 @@ class EnableAnswers:
     UPDATE_JUMP_QUESTION: str = """
         UPDATE EnableAnswers SET jump_to_question = ? WHERE jump_to_question = ?
         """
+
+    GET: str = """
+        SELECT ea.question_id, ea.answer_id, a.name, ea.jump_to_question, ea.cycle
+        FROM EnableAnswers ea LEFT JOIN Answer a ON ea.answer_id = a.id
+        """
+
+    def __init__(self, question_id: int = 0, answer_id: int = None, answer_name: str = None, jump_to_question: int = None,
+                 cycle: int = 0):
+        self.question_id = question_id
+        self.answer_id = answer_id
+        self.answer_name = answer_name
+        self.jump_to_question = jump_to_question
+        self.cycle = cycle
 
 
 class BranchQuestions:

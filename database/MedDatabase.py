@@ -1,4 +1,5 @@
 import sqlite3
+from collections import deque
 from typing import Optional, Dict, List, Union, Literal
 
 from database.entities.Entity import *
@@ -33,6 +34,16 @@ def _list_answers_from_response(answers_list_response: list) -> list[Answer]:
                                           name=answer[1],
                                           ),
                     answers_list_response))
+
+
+def _get_enable_answers_from_request(enable_answers_list: list) -> list[EnableAnswers]:
+    return list(map(lambda ea: EnableAnswers(question_id=ea[0],
+                                             answer_id=ea[1],
+                                             answer_name=ea[2],
+                                             jump_to_question=ea[3],
+                                             cycle=ea[4],
+                                             ),
+                    enable_answers_list))
 
 
 def _list_question_from_response(questions_list_response: list) -> list[Question]:
@@ -284,6 +295,7 @@ class MedDatabase:
                 question_ = _question_from_response(self.execute(Question.GET, id_, need_answer=True))
                 self.execute(Question.UPDATE_BLOCK, block, id_)
                 snb(question_.next_question_id)
+
         snb(from_)
 
     def update_next_question(self, old_question_id: int, new_question_id: int):
@@ -295,6 +307,12 @@ class MedDatabase:
     def get_last_question(self, block: int) -> Question:
         try:
             return _question_from_response(self.execute(Question.GET_LAST, block, need_answer=True))
+        except IndexError:
+            raise QuestionNotFoundError()
+
+    def get_first_question(self, block: int) -> Question:
+        try:
+            return _question_from_response(self.execute(Question.GET_FIRST, block, need_answer=True))
         except IndexError:
             raise QuestionNotFoundError()
 
@@ -313,15 +331,21 @@ class MedDatabase:
         self.execute(Question.UPDATE_BLOCK_AND_SET_START_ZERO, question.block, first_question_in_branch.id_)
         self.execute(Question.UPDATE_BLOCK_AND_SET_NEXT_QUESTION, question.block, question_after_block,
                      last_question_in_branch.id_)
+        self._set_new_block(first_question_in_branch.id_, last_question_in_branch.id_, question.block)
 
     def set_prev_question(self, set_prev_question_id: int, current_question: Question):
         if set_prev_question_id == current_question.id_: return
         set_prev_question = _question_from_response(self.execute(Question.GET, set_prev_question_id, need_answer=True))
-        current_prev_question = _question_from_response(self.execute(Question.GET_PREV, current_question.id_, need_answer=True))
-        self.execute(Question.UPDATE_SET_START_NEXT_AND_BLOCK, current_question.start, current_question.next_question_id, current_question.block, current_prev_question.id_)
+        current_prev_question = _question_from_response(
+            self.execute(Question.GET_PREV, current_question.id_, need_answer=True))
+        self.execute(Question.UPDATE_SET_START_NEXT_AND_BLOCK, current_question.start,
+                     current_question.next_question_id, current_question.block, current_prev_question.id_)
         self.execute(Question.UPDATE_NEXT_QUESTION, current_question.id_, set_prev_question.id_)
         self.execute(Question.UPDATE_SET_NEXT_AND_BLOCK, set_prev_question.next_question_id, set_prev_question.block,
                      current_question.id_)
+
+    def get_deque_enable_answers(self) -> list[EnableAnswers]:
+        return _get_enable_answers_from_request(self.execute(EnableAnswers.GET, need_answer=True))
 
 
 if __name__ == "__main__":

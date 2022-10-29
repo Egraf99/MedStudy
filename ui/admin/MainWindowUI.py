@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
+from collections import deque
 
-# Form implementation generated from reading ui file 'main_window.ui'
+# Form implementation generated from reading ui file 'ui/qt/main_window.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.7
 #
@@ -9,8 +10,10 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QTableWidgetItem
+from PyQt5.QtCore import QSize, Qt
+from PyQt5.QtGui import QStandardItem, QStandardItemModel, QColor, QFont
 
+from MedRepo import MedRepo
 from database.entities.Entity import Question
 
 
@@ -26,34 +29,19 @@ class Ui_MainWindow(object):
         self.verticalLayout_2 = QtWidgets.QVBoxLayout()
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.new_question_button = QtWidgets.QPushButton(self.centralwidget)
-        self.new_question_button.setObjectName("add_patient_button")
+        self.new_question_button.setObjectName("new_question_button")
         self.verticalLayout_2.addWidget(self.new_question_button)
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.questions_table = QuestionTable(self.centralwidget)
-        self.questions_table.setEnabled(True)
-        self.questions_table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
-        self.questions_table.setProperty("showDropIndicator", True)
-        self.questions_table.setDragDropMode(QtWidgets.QAbstractItemView.NoDragDrop)
-        self.questions_table.setDefaultDropAction(QtCore.Qt.CopyAction)
-        self.questions_table.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
-        self.questions_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        self.questions_table.setCornerButtonEnabled(True)
-        self.questions_table.setColumnCount(3)
-        self.questions_table.setObjectName("questions_table")
-        self.questions_table.setRowCount(0)
-        item = QtWidgets.QTableWidgetItem()
-        self.questions_table.setHorizontalHeaderItem(0, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.questions_table.setHorizontalHeaderItem(1, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.questions_table.setHorizontalHeaderItem(2, item)
-        self.horizontalLayout.addWidget(self.questions_table)
+        self.treeView = QuestionTree(self.centralwidget)
+        self.treeView.setHeaderHidden(False)
+        self.treeView.setObjectName("treeView")
+        self.horizontalLayout.addWidget(self.treeView)
         self.verticalLayout = QtWidgets.QVBoxLayout()
         self.verticalLayout.setObjectName("verticalLayout")
         self.change_question_button = QtWidgets.QPushButton(self.centralwidget)
         self.change_question_button.setEnabled(False)
-        self.change_question_button.setObjectName("delete_patient")
+        self.change_question_button.setObjectName("change_question_button")
         self.verticalLayout.addWidget(self.change_question_button)
         spacerItem = QtWidgets.QSpacerItem(20, 178, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem)
@@ -80,37 +68,69 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Med"))
         self.new_question_button.setText(_translate("MainWindow", "Новый вопрос"))
-        item = self.questions_table.horizontalHeaderItem(0)
-        item.setText(_translate("MainWindow", "Вопрос"))
-        item = self.questions_table.horizontalHeaderItem(1)
-        item.setText(_translate("MainWindow", "Коротко"))
-        item = self.questions_table.horizontalHeaderItem(2)
-        item.setText(_translate("MainWindow", "Порядок"))
         self.change_question_button.setText(_translate("MainWindow", "Изменить"))
         self.add_answer_button.setText(_translate("MainWindow", "Добавить ответы"))
         self.set_branch_button.setText(_translate("MainWindow", "Добавить ветвление"))
 
 
-class QuestionTable(QtWidgets.QTableWidget):
+class QuestionTree(QtWidgets.QTreeView):
     def __init__(self, parent=None):
-        super(QuestionTable, self).__init__(parent)
+        super(QuestionTree, self).__init__(parent)
+        self.med_repo = MedRepo()
 
-    def clear_(self):
-        self.setRowCount(0)
+        self.model = QStandardItemModel()
+        self.model.setHorizontalHeaderLabels(['Имя', 'Тип'])
+        self.header().setDefaultSectionSize(180)
+        self.setModel(self.model)
+        self.model.setRowCount(0)
+        self.update()
+        self.collapseAll()
 
-    def add_question(self, question: Question):
-        row = self.rowCount()
-        self.insertRow(row)
-        item_with_data = QTableWidgetItem(question.name)
-        item_with_data.setData(QtCore.Qt.UserRole, question.id_)
-        self.setItem(row, 0, item_with_data)
-        self.setItem(row, 1, QTableWidgetItem(question.short))
+    def update(self):
+        seen = {}
 
-    def fill(self, questions: list[Question]):
-        self.clear_()
-        for question in questions:
-            self.add_question(question)
+        def place_question_and_next(question_id: int, root=None):
+            if root is None:
+                root = self.model.invisibleRootItem()
 
-    def get_selected_question_id(self) -> int:
-        # у выделенной строки берется значение из поля Порядок
-        return self.selectedIndexes()[0].data(QtCore.Qt.UserRole)
+            chain = self.med_repo.get_next_questions(question_id)
+            for question in chain:
+                qsi = QStandardItem(question.name)
+                qsi.setData(question_id, Qt.UserRole)
+                root.appendRow([
+                    qsi,
+                    QStandardItem('вопрос'),
+                ])
+                seen[question.id_] = root.child(root.rowCount() - 1)
+
+        def place_answer(name: str, root: QStandardItem) -> QStandardItem:
+            root.appendRow([
+                QStandardItem(name),
+                QStandardItem('ответ'),
+            ])
+            return root.child(root.rowCount() - 1)
+
+        start_question = self.med_repo.get_first_question_in_block(0)
+        place_question_and_next(start_question.id_)
+
+        # enable_answers = deque(enable_answers_)
+
+        ea = self.med_repo.get_deque_enable_answers()
+        enable_answers = deque(ea)
+
+        while enable_answers:
+            ea = enable_answers.popleft()
+            root = seen.get(ea.question_id)
+            if root is None:
+                # нужный вопрос еще не добавлен в дерево
+                enable_answers.append(ea)
+                continue
+
+            if ea.answer_id is None:
+                place_question_and_next(ea.jump_to_question, root)
+                continue
+
+            if ea.answer_id is not None:
+                answer_root = place_answer(ea.answer_name, root)
+                if ea.jump_to_question is not None:
+                    place_question_and_next(ea.jump_to_question, answer_root)

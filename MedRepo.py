@@ -1,7 +1,8 @@
+from collections import deque
 from typing import Optional, List, Dict, Union
 
 from database.MedDatabase import MedDatabase
-from database.entities.Entity import Patient, Question, Answer
+from database.entities.Entity import Patient, Question, Answer, EnableAnswers
 
 
 class Singleton(object):
@@ -44,8 +45,11 @@ class MedRepo(Singleton):
     def delete_question(self, question_id: int):
         self._db.delete_question(question_id)
 
-    def get_last_question_in_main_block(self) -> Question:
-        return self._db.get_last_question(0)
+    def get_last_question_in_block(self, block: int) -> Question:
+        return self._db.get_last_question(block)
+
+    def get_first_question_in_block(self, block: int) -> Question:
+        return self._db.get_first_question(block)
 
     def get_next_questions(self, question_id: int) -> list[Question]:
         return self._db.get_next_questions(question_id)
@@ -84,3 +88,6 @@ class MedRepo(Singleton):
 
     def set_prev_question(self, prev_question_id: int, current_question: Question):
         self._db.set_prev_question(prev_question_id, current_question)
+
+    def get_deque_enable_answers(self) -> list[EnableAnswers]:
+        return self._db.get_deque_enable_answers()

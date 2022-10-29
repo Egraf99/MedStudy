@@ -20,13 +20,13 @@ class Window(QMainWindow, Ui_MainWindow):
 
     def _update_last_question_id(self):
         try:
-            self.last_question_id = self.med_repo.get_last_question_in_main_block().id_
+            self.last_question_id = self.med_repo.get_last_question_in_block(0).id_
         except QuestionNotFoundError:
             self.last_question_id = -1
 
     def connection_signal_slot(self):
         self.new_question_button.clicked.connect(self._add_question_show)
-        self.questions_table.cellPressed.connect(self._active_change_buttons)
+        # self.questions_table.cellPressed.connect(self._active_change_buttons)
         self.change_question_button.clicked.connect(self._change_question)
         self.add_answer_button.clicked.connect(self._add_answer_dialog_show)
         self.set_branch_button.clicked.connect(self._set_circle_dialog_show)
@@ -66,4 +66,5 @@ class Window(QMainWindow, Ui_MainWindow):
         self._add_question_to_table(self.med_repo.get_questions())
 
     def _add_question_to_table(self, question_list: list[Question]):
-        self.questions_table.fill(question_list)
+        # self.questions_table.fill(question_list)
+        pass
