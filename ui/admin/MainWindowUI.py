@@ -11,7 +11,7 @@ from collections import deque
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QSize, Qt
-from PyQt5.QtGui import QStandardItem, QStandardItemModel, QColor, QFont
+from PyQt5.QtGui import QStandardItem, QStandardItemModel, QColor, QFont, QIcon
 
 from MedRepo import MedRepo
 from database.entities.Entity import Question
@@ -77,44 +77,52 @@ class QuestionTree(QtWidgets.QTreeView):
     def __init__(self, parent=None):
         super(QuestionTree, self).__init__(parent)
         self.med_repo = MedRepo()
-
         self.model = QStandardItemModel()
-        self.model.setHorizontalHeaderLabels(['Имя', 'Тип'])
-        self.header().setDefaultSectionSize(180)
+        self.model.setHorizontalHeaderLabels(['Имя', '', 'Цикл'])
         self.setModel(self.model)
         self.model.setRowCount(0)
         self.update()
         self.collapseAll()
 
-    def update(self):
+    def update(self) -> None:
+        self._update()
+        self.resizeColumnToContents(0)
+        self.resizeColumnToContents(1)
+        self.resizeColumnToContents(2)
+
+    def _update(self):
         seen = {}
 
-        def place_question_and_next(question_id: int, root=None):
+        def place_question_and_next(question_id: int, cycle: bool,  root=None):
+            print(question_id, cycle, root)
             if root is None:
                 root = self.model.invisibleRootItem()
 
             chain = self.med_repo.get_next_questions(question_id)
             for question in chain:
-                qsi = QStandardItem(question.name)
-                qsi.setData(question_id, Qt.UserRole)
+                qsi_name = QStandardItem(question.name)
+                qsi_name.setData(question_id, Qt.UserRole)
+
                 root.appendRow([
-                    qsi,
-                    QStandardItem('вопрос'),
+                    qsi_name,
+                    QStandardItem(QIcon('./icons/question_2.png'), ''),
+                    get_ok_standard_item(cycle)
                 ])
                 seen[question.id_] = root.child(root.rowCount() - 1)
 
-        def place_answer(name: str, root: QStandardItem) -> QStandardItem:
+        def place_answer(name: str, cycle: bool, root: QStandardItem) -> QStandardItem:
             root.appendRow([
                 QStandardItem(name),
-                QStandardItem('ответ'),
+                QStandardItem(QIcon('./icons/answer.png'), ''),
+                get_ok_standard_item(cycle)
             ])
             return root.child(root.rowCount() - 1)
 
+        # берем основную цепочку и добавляем в виджет
         start_question = self.med_repo.get_first_question_in_block(0)
-        place_question_and_next(start_question.id_)
+        place_question_and_next(start_question.id_, False)
 
-        # enable_answers = deque(enable_answers_)
-
+        # берем все доступные ответы и преобразуем в очередь
         ea = self.med_repo.get_deque_enable_answers()
         enable_answers = deque(ea)
 
@@ -126,11 +134,19 @@ class QuestionTree(QtWidgets.QTreeView):
                 enable_answers.append(ea)
                 continue
 
-            if ea.answer_id is None:
-                place_question_and_next(ea.jump_to_question, root)
+            if ea.answer_id is None:  # вопрос с ветвлением без ответов
+                place_question_and_next(ea.jump_to_question, bool(ea.cycle), root)
                 continue
 
-            if ea.answer_id is not None:
-                answer_root = place_answer(ea.answer_name, root)
+            else:  # вопрос с ответами
+                answer_root = place_answer(ea.answer_name, bool(ea.cycle), root)
                 if ea.jump_to_question is not None:
-                    place_question_and_next(ea.jump_to_question, answer_root)
+                    # добавляем ветвление к QStandartItem ответа на вопрос
+                    place_question_and_next(ea.jump_to_question, False, answer_root)
+
+
+def get_ok_standard_item(b: bool) -> QStandardItem:
+    if b:
+        return QStandardItem(QIcon('./icons/ok.png'), '')
+    else:
+        return QStandardItem('')
