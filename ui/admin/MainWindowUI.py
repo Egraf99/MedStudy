@@ -41,6 +41,10 @@ class Ui_MainWindow(object):
         self.horizontalLayout.addWidget(self.question_tree)
         self.verticalLayout = QtWidgets.QVBoxLayout()
         self.verticalLayout.setObjectName("verticalLayout")
+        self.update_tree_button = QtWidgets.QPushButton(self.centralwidget)
+        self.update_tree_button.setEnabled(True)
+        self.update_tree_button.setObjectName("update_tree_button")
+        self.verticalLayout.addWidget(self.update_tree_button)
         self.change_question_button = QtWidgets.QPushButton(self.centralwidget)
         self.change_question_button.setEnabled(False)
         self.change_question_button.setObjectName("change_question_button")
@@ -70,6 +74,7 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Med"))
         self.new_question_button.setText(_translate("MainWindow", "Новый вопрос"))
+        self.update_tree_button.setText(_translate("MainWindow", "Обновить таблицу"))
         self.change_question_button.setText(_translate("MainWindow", "Изменить"))
         self.add_answer_button.setText(_translate("MainWindow", "Добавить ответы"))
         self.set_branch_button.setText(_translate("MainWindow", "Добавить ветвление"))
@@ -80,20 +85,24 @@ class QuestionTree(QtWidgets.QTreeView):
         super(QuestionTree, self).__init__(parent)
         self.med_repo = MedRepo()
         self.model = QStandardItemModel()
-        self.model.setHorizontalHeaderLabels(['Имя', '', 'Цикл'])
         self.setModel(self.model)
         self.model.setRowCount(0)
         self.update()
         self.collapseAll()
 
     def update(self) -> None:
+        self.model.clear()
+        self.model.setHorizontalHeaderLabels(['Имя', '', 'Цикл'])
         self._update()
         self.resizeColumnToContents(0)
         self.resizeColumnToContents(1)
         self.resizeColumnToContents(2)
 
     def get_selected_question_id(self) -> int:
-        data = self.selectedIndexes()[0].data(Qt.UserRole)
+        try:
+            data = self.selectedIndexes()[0].data(Qt.UserRole)
+        except IndexError:
+            raise SelectNoQuestionError("в таблице не выбрано поле")
         if data is None:
             raise SelectNoQuestionError("выбран ответ")
 

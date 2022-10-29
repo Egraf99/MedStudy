@@ -27,30 +27,44 @@ class Window(QMainWindow, Ui_MainWindow):
     def connection_signal_slot(self):
         self.new_question_button.clicked.connect(self._add_question_show)
         self.question_tree.clicked.connect(self._active_change_buttons)
+        self.update_tree_button.clicked.connect(self._update_tree)
         self.change_question_button.clicked.connect(self._change_question)
         self.add_answer_button.clicked.connect(self._add_answer_dialog_show)
         self.set_branch_button.clicked.connect(self._set_circle_dialog_show)
+
+    def _update_tree(self):
+        self.question_tree.update()
+        self._disable_question_buttons()
+
+    def _disable_question_buttons(self):
+        self.change_question_button.setEnabled(False)
+        self.set_branch_button.setEnabled(False)
+        self.add_answer_button.setEnabled(False)
 
     def _add_question_show(self):
         AddNewQuestionDialog(parent=self, after_save_func=self.after_add_question).exec()
 
     def _add_answer_dialog_show(self):
-        question_id = self.question_tree.get_selected_question_id()
+        try:
+            question_id = self.question_tree.get_selected_question_id()
+        except SelectNoQuestionError:
+            return
         question = self.med_repo.get_question_by_id(question_id)
         AddAnswerDialog(question, parent=self).exec()
 
     def _set_circle_dialog_show(self):
-        question_id = self.question_tree.get_selected_question_id()
+        try:
+            question_id = self.question_tree.get_selected_question_id()
+        except SelectNoQuestionError:
+            return
         question = self.med_repo.get_question_by_id(question_id)
         SetCircleDialog(question, parent=self).exec()
 
     def _active_change_buttons(self):
         try:
-            question_id =self.question_tree.get_selected_question_id()
+            question_id = self.question_tree.get_selected_question_id()
         except SelectNoQuestionError:
-            self.change_question_button.setEnabled(False)
-            self.set_branch_button.setEnabled(False)
-            self.add_answer_button.setEnabled(False)
+            self._disable_question_buttons()
             return
 
         selected_question = self.med_repo.get_question_by_id(question_id)
@@ -62,7 +76,11 @@ class Window(QMainWindow, Ui_MainWindow):
             self.add_answer_button.setEnabled(False)
 
     def _change_question(self):
-        UpdateQuestionDialog(self.question_tree.get_selected_question_id(), parent=self,
+        try:
+            question_id = self.question_tree.get_selected_question_id()
+        except SelectNoQuestionError:
+            return
+        UpdateQuestionDialog(question_id, parent=self,
                              after_update_func=self.update_table).exec()
 
     def after_add_question(self, new_question_id: int):
