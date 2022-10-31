@@ -105,7 +105,6 @@ class AddNewQuestionDialog(QuestionDialog):
         question = self._create_question()
         self.med_repo.insert_question(question)
         self.after_save_func(self.med_repo.get_question_id_by_name(question.name))
-        self.question_groupBox.setTitle(f"Новый вопрос")
 
 
 class UpdateQuestionDialog(QuestionDialog):
@@ -136,6 +135,8 @@ class UpdateQuestionDialog(QuestionDialog):
     def save_question(self):
         question = self._create_question()
         question.id_ = self.med_repo.get_question_id_by_name(self.old_question.name)
+        if question.type_ != self.old_question.type_:
+            self.med_repo.update_question_type(question, question.type_)
         self.med_repo.update_question(question)
         self.after_update_func()
 

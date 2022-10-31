@@ -39,6 +39,12 @@ class MedRepo(Singleton):
     def update_question(self, question: Question):
         self._db.update_question(question)
 
+    def update_question_type(self, question: Question, type_: int):
+        self._db.update_question_type(question, type_)
+
+    def update_question_measure(self, question: Question, measure: str):
+        self._db.update_question_measure(question, measure)
+
     def get_question_id_by_name(self, name: str) -> Optional[int]:
         return self._db.get_question_id_by_name(name)
 

@@ -21,15 +21,15 @@ class AddAnswerDialog(Ui_AddAnswerDialog, QDialog):
         super(AddAnswerDialog, self).keyPressEvent(event)
 
     def _update_question(self, question: Question):
-        self._update_name(question.name)
-        self._update_type(question.type_)
-        self._update_measure(question.measure)
-        self._update_answers(self.med_repo.get_enable_answers(question.id_))
+        self._update_name_ui(question.name)
+        self._update_type_ui(question.type_)
+        self._update_measure_ui(question.measure)
+        self._update_answers_ui(self.med_repo.get_enable_answers(question.id_))
 
-    def _update_name(self, s: str):
+    def _update_name_ui(self, s: str):
         self.answerGroupBox.setTitle(s)
 
-    def _update_type(self, t: int):
+    def _update_type_ui(self, t: int):
         if t == Question.TypeAnswer.BOOL.value:
             self.bool_answer_radioButton.setChecked(True)
         elif t == Question.TypeAnswer.SINGLE.value:
@@ -43,10 +43,10 @@ class AddAnswerDialog(Ui_AddAnswerDialog, QDialog):
         elif t == Question.TypeAnswer.TEXT.value:
             self.text_answer_radioButton.setChecked(True)
 
-    def _update_measure(self, m: str):
+    def _update_measure_ui(self, m: str):
         self.measure_lineEdit.setText(m)
 
-    def _update_answers(self, list_answers: list[Answer]):
+    def _update_answers_ui(self, list_answers: list[Answer]):
         if not list_answers: return
         for answer in list_answers:
             item = QListWidgetItem(answer.name)
@@ -59,9 +59,12 @@ class AddAnswerDialog(Ui_AddAnswerDialog, QDialog):
         self.buttonBox.accepted.connect(self._save_type_and_measure_question)
 
     def _save_type_and_measure_question(self):
-        self.question.type_ = self._take_question_type()
-        self.question.measure = self._take_measure()
-        self.med_repo.update_question(self.question)
+        type_ = self._take_question_type()
+        measure = self._take_measure()
+        if self.question.type_ != type_:
+            self.med_repo.update_question_type(self.question, type_)
+        if self.question.measure != measure:
+            self.med_repo.update_question_measure(self.question, measure)
 
     def _take_measure(self) -> str:
         return self.measure_lineEdit.text().strip()

@@ -113,7 +113,6 @@ class Ui_Dialog(object):
         self.single_answer_radioButton.toggled['bool'].connect(self.measure_lineEdit.setEnabled) # type: ignore
         self.many_answer_radioButton.toggled['bool'].connect(self.measure_lineEdit.setEnabled) # type: ignore
         self.bool_answer_radioButton.toggled['bool'].connect(self.measure_lineEdit.clear) # type: ignore
-        self.int_answer_radio_Button.toggled['bool'].connect(self.measure_lineEdit.clear) # type: ignore
         self.int_answer_radio_Button.toggled['bool'].connect(self.measure_lineEdit.setEnabled) # type: ignore
         self.text_answer_radioButton.toggled['bool'].connect(self.measure_lineEdit.setEnabled) # type: ignore
         self.float_answer_radioButton.toggled['bool'].connect(self.measure_lineEdit.setEnabled) # type: ignore

@@ -1,6 +1,5 @@
 import sqlite3
-from collections import deque
-from typing import Optional, Dict, List, Union, Literal
+from typing import Optional, Union, Literal
 
 from database.entities.Entity import *
 from database.entities.Entity import Answer
@@ -135,17 +134,9 @@ class MedDatabase:
     def insert_question(self, question: Question):
         question_id = self._insert_entity_if_not_exist(Question.GET_ID_BY_NAME, question.name,
                                                        Question.INSERT,
-                                                       question.name, question.short, question.type_, question.measure,
+                                                       question.name, question.short, question.measure,
                                                        question.require_int, question.private_int)
-        if question.type_ == Question.TypeAnswer.BOOL.value:
-            self.execute(EnableAnswers.INSERT_NO_ANSWER, question_id)
-            self.execute(EnableAnswers.INSERT_YES_ANSWER, question_id)
-        else:
-            if question.type_ == Question.TypeAnswer.MANY.value and question.list_answers:
-                for answer in question.list_answers:
-                    answer_id = self._insert_entity_if_not_exist(Answer.GET_ID_BY_TEXT, answer, Answer.INSERT_INTO,
-                                                                 answer)
-                    self.execute(EnableAnswers.INSERT_ANSWER, question_id, answer_id)
+        self.update_question_type(question_id, question.type_)
 
     def get_question_by_id(self, id_: int) -> Question:
         return _list_question_from_response(self.execute(Question.GET, id_, need_answer=True))[0]
@@ -166,20 +157,31 @@ class MedDatabase:
         self.execute(Question.UPDATE_QUESTION,
                      question.name,
                      question.short,
-                     question.type_,
                      question.measure,
                      question.require_int,
                      question.private_int,
                      question.id_,
                      )
-        if question.type_ == Question.TypeAnswer.BOOL.value:
-            self.execute(EnableAnswers.INSERT_YES_ANSWER, question.id_)
-            self.execute(EnableAnswers.INSERT_NO_ANSWER, question.id_)
-        if question.type_ in [Question.TypeAnswer.INTEGER.value, Question.TypeAnswer.TEXT.value,
-                              Question.TypeAnswer.FLOAT.value]:
-            self.execute(EnableAnswers.DELETE_ANSWERS_FROM_QUESTION, question.id_)
+
+    def update_question_type(self, question: Union[Question, int], type_: int) -> None:
+        if type(question) == Question:
+            question_id = question.id_
+        else:
+            question_id = question
+
+        self.execute(Question.UPDATE_TYPE, type_, question_id)
+        if type_ not in [Question.TypeAnswer.MANY.value, Question.TypeAnswer.SINGLE.value]:
+            self.execute(EnableAnswers.DELETE_QUESTION, question_id)
+
+        if type_ == Question.TypeAnswer.BOOL.value:
+            self.execute(EnableAnswers.INSERT_YES_ANSWER, question_id)
+            self.execute(EnableAnswers.INSERT_NO_ANSWER, question_id)
+
+    def update_question_measure(self, question: Question, measure: str) -> None:
+        self.execute(Question.UPDATE_MEASURE, measure, question.id_)
+
+    def update_question_answers(self, question: Question):
         if question.list_answers:
-            self.execute(EnableAnswers.DELETE_ANSWERS_FROM_QUESTION, question.id_)
             for answer in question.list_answers:
                 answer_id = self.execute(Answer.GET_ID_BY_TEXT, answer)
                 self.execute(EnableAnswers.INSERT_ANSWER, question.id_, answer_id)
@@ -225,7 +227,6 @@ class MedDatabase:
                 acc.append(question_)
                 return gnq(question_.next_question_id, acc)
 
-        # question = _list_question_from_response(self.execute(Question.GET, question_id, need_answer=True))[0]
         return gnq(question_id, list())
 
     def get_jump(self, question_id: int) -> dict[Union[Literal['basic_block'], Answer], list[bool, list[Question]]]:

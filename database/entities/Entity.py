@@ -94,11 +94,18 @@ class Question:
         UPDATE Question SET 
             name = ?,
             short = ?,
-            type_answer = ?,
             measure = ?,
             require = ?,
             private = ? 
         WHERE id = ?"""
+
+    UPDATE_TYPE: str = """
+        UPDATE Question SET type_answer = ? WHERE id = ?
+        """
+
+    UPDATE_MEASURE: str = """
+        UPDATE Question SET measure = ? WHERE id = ?
+        """
 
     UPDATE_NEXT_QUESTION: str = """
         UPDATE Question SET next_question_id = ? WHERE id = ?
@@ -208,12 +215,11 @@ class Question:
         INSERT INTO Question (
             name,
             short, 
-            type_answer, 
             measure,
             require,
             private 
             )
-        VALUES (?,?,?,?,?,?)"""
+        VALUES (?,?,?,?,?)"""
 
     GET_ID_BY_NAME: str = """
         SELECT id FROM Question WHERE name = ?
@@ -228,7 +234,7 @@ class Question:
         TEXT = 5
 
     def __init__(self,
-                 id_: int = None,
+                 id_: int = 0,
                  name: str = None,
                  short: str = None,
                  type_: int = None,
@@ -251,9 +257,9 @@ class Question:
         self.start: bool = bool(start)
         self.next_question_id = next_question_id
         self.block = block
-        self.list_answers = None
+        self.list_answers: list[Answer] = []
 
-    def set_enable_answers(self, list_answers: list[str] = None):
+    def set_enable_answers(self, list_answers: list[Answer] = None):
         if list_answers:
             self.list_answers = list_answers
 
@@ -358,10 +364,6 @@ class EnableAnswers:
         LEFT JOIN Answer a ON ea.answer_id = a.id
         LEFT JOIN Question q ON ea.jump_to_question = q.id
         WHERE question_id = ?
-        """
-
-    DELETE_ANSWERS_FROM_QUESTION: str = """
-        DELETE FROM EnableAnswers WHERE question_id = ?
         """
 
     UPDATE_JUMP: str = """
