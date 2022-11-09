@@ -6,6 +6,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QStandardItem, QStandardItemModel, QIcon
 
 from MedRepo import MedRepo
+from database.MedDatabase import QuestionNotFoundError
 
 
 # Form implementation generated from reading ui file 'ui/qt/main_window.ui'
@@ -136,7 +137,10 @@ class QuestionTree(QtWidgets.QTreeView):
             return root.child(root.rowCount() - 1)
 
         # берем основную цепочку и добавляем в виджет
-        start_question = self.med_repo.get_first_question_in_block(0)
+        try:
+            start_question = self.med_repo.get_first_question_in_block(0)
+        except QuestionNotFoundError:
+            return
         place_question_and_next(start_question.id_, False)
 
         # берем все доступные ответы и преобразуем в очередь

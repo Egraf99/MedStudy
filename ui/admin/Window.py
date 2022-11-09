@@ -84,8 +84,8 @@ class Window(QMainWindow, Ui_MainWindow):
                              after_update_func=self.update_table).exec()
 
     def after_add_question(self, new_question_id: int):
-        self._update_last_question_id()
         self.med_repo.update_next_question(self.last_question_id, new_question_id)
+        self._update_last_question_id()
         self.update_table()
 
     def update_table(self):
