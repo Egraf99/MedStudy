@@ -97,3 +97,4 @@ class MedRepo(Singleton):
 
     def get_deque_enable_answers(self) -> list[EnableAnswers]:
         return self._db.get_deque_enable_answers()
+
